@@ -42,7 +42,7 @@ export interface RecorderSupport {
 }
 
 export function probeRecordingSupport(): RecorderSupport {
-  if (process.env.TEACH_GPT_RECORDER?.toLowerCase() === "demo") {
+  if (teachRecorderSetting() === "demo") {
     return {
       backend: "demo",
       supported: true,
@@ -88,7 +88,7 @@ export async function startRecording(id: string): Promise<TeachSession> {
   if (session.state !== "ready" || !session.authorization) throw new Error("recording_not_authorized");
   if (Date.parse(session.authorization.expires_at) <= Date.now()) throw new Error("authorization_expired");
   await assertNoActiveRecording();
-  const requested = process.env.TEACH_GPT_RECORDER?.toLowerCase() || "auto";
+  const requested = teachRecorderSetting() || "auto";
   const backend = requested === "demo" ? "demo" : "gnome";
   let path = join(sessionDir(id), "recording.webm");
 
@@ -253,4 +253,8 @@ export function discoverSessionBusAddress(
 
 function sanitize(value: string): string {
   return value.replace(/[\r\n]+/g, " ").trim().slice(0, 240) || "unknown_error";
+}
+
+function teachRecorderSetting(): string | undefined {
+  return (process.env.TEACH_RECORDER || process.env.TEACH_GPT_RECORDER)?.toLowerCase();
 }

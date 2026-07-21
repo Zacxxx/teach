@@ -8,17 +8,17 @@ import { fileURLToPath } from "node:url";
 import test from "node:test";
 
 test("MCP server exposes the complete teaching lifecycle", async () => {
-  const home = await mkdtemp(join(tmpdir(), "teach-gpt-mcp-"));
+  const home = await mkdtemp(join(tmpdir(), "teach-mcp-"));
   const cwd = dirname(dirname(fileURLToPath(import.meta.url)));
   const env = Object.fromEntries(Object.entries(process.env).filter((entry): entry is [string, string] => typeof entry[1] === "string"));
   const transport = new StdioClientTransport({
     command: "bun",
     args: ["run", "src/index.ts"],
     cwd,
-    env: { ...env, TEACH_GPT_HOME: home, TEACH_GPT_RECORDER: "demo", TEACH_GPT_ANALYZER: "fixture" },
+    env: { ...env, TEACH_HOME: home, TEACH_RECORDER: "demo", TEACH_ANALYZER: "fixture" },
     stderr: "pipe",
   });
-  const client = new Client({ name: "teach-gpt-test", version: "0.1.0" });
+  const client = new Client({ name: "teach-test", version: "0.1.0" });
   try {
     await client.connect(transport);
     const listed = await client.listTools();
@@ -36,8 +36,8 @@ test("MCP server exposes the complete teaching lifecycle", async () => {
       "teach_stop",
     ]);
     const resources = await client.listResources();
-    assert.ok(resources.resources.some((resource) => resource.uri === "ui://teach-gpt/workflow-v2.html"));
-    const widget = await client.readResource({ uri: "ui://teach-gpt/workflow-v2.html" });
+    assert.ok(resources.resources.some((resource) => resource.uri === "ui://teach/workflow-v2.html"));
+    const widget = await client.readResource({ uri: "ui://teach/workflow-v2.html" });
     const widgetText = JSON.stringify(widget);
     const widgetHtml = (widget.contents[0] as { text?: string }).text || "";
     assert.match(widgetText, /text\/html;profile=mcp-app/);
@@ -79,24 +79,24 @@ test("MCP server exposes the complete teaching lifecycle", async () => {
 });
 
 test("packaged Linux backend starts without Bun or graphical environment variables", async () => {
-  const home = await mkdtemp(join(tmpdir(), "teach-gpt-packaged-"));
+  const home = await mkdtemp(join(tmpdir(), "teach-packaged-"));
   const packageRoot = resolve(dirname(dirname(fileURLToPath(import.meta.url))), "..", "..");
-  const executable = join(packageRoot, "plugins", "teach-gpt", "bin", "teach-gpt-mcp");
+  const executable = join(packageRoot, "plugins", "teach", "bin", "teach-mcp");
   const transport = new StdioClientTransport({
     command: executable,
     args: [],
-    cwd: join(packageRoot, "plugins", "teach-gpt"),
+    cwd: join(packageRoot, "plugins", "teach"),
     env: {
       HOME: process.env.HOME || tmpdir(),
       PATH: "/usr/bin:/bin",
       XDG_CACHE_HOME: join(home, "cache"),
-      TEACH_GPT_HOME: home,
-      TEACH_GPT_RECORDER: "demo",
-      TEACH_GPT_ANALYZER: "fixture",
+      TEACH_HOME: home,
+      TEACH_RECORDER: "demo",
+      TEACH_ANALYZER: "fixture",
     },
     stderr: "pipe",
   });
-  const client = new Client({ name: "teach-gpt-package-test", version: "0.1.0" });
+  const client = new Client({ name: "teach-package-test", version: "0.1.0" });
   try {
     await client.connect(transport);
     const tools = await client.listTools();

@@ -5,6 +5,6 @@ dist/
 .env.local
 *.log
 *.tsbuildinfo
-.teach-gpt/
+.teach/
 recordings/
 tmp/

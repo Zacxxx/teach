@@ -1,12 +1,12 @@
 {
-  "name": "@teach-gpt/core",
+  "name": "@teach/core",
   "version": "0.2.0",
-  "description": "File-backed recording-to-skill foundation for Teach GPT",
+  "description": "File-backed recording-to-skill foundation for Teach",
   "license": "Apache-2.0",
   "type": "module",
   "exports": "./src/index.ts",
   "bin": {
-    "teach-gpt": "./src/cli.ts"
+    "teach": "./src/cli.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

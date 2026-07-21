@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "teach": {
+      "command": "./bin/teach-mcp",
+      "args": [],
+      "cwd": "."
+    }
+  }
+}

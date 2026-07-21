@@ -1,14 +1,14 @@
 {
-  "name": "teach-gpt",
+  "name": "teach",
   "interface": {
-    "displayName": "Teach GPT"
+    "displayName": "Teach"
   },
   "plugins": [
     {
-      "name": "teach-gpt",
+      "name": "teach",
       "source": {
         "source": "local",
-        "path": "./plugins/teach-gpt"
+        "path": "./plugins/teach"
       },
       "policy": {
         "installation": "AVAILABLE",

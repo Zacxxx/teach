@@ -1,11 +1,11 @@
-export const TEACH_WIDGET_URI = "ui://teach-gpt/workflow-v2.html";
+export const TEACH_WIDGET_URI = "ui://teach/workflow-v2.html";
 
 export const TEACH_WIDGET_HTML = `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Teach GPT</title>
+  <title>Teach</title>
   <style>
     :root {
       color-scheme: light;
@@ -94,7 +94,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
   </style>
 </head>
 <body>
-  <section class="shell" aria-label="Teach GPT workflow controls">
+  <section class="shell" aria-label="Teach workflow controls">
     <header>
       <div class="brand">
         <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
@@ -102,7 +102,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
           <path d="M17 20h30M32 20v28M21 34h22" stroke="white" stroke-width="6" stroke-linecap="round" />
           <circle cx="46" cy="46" r="8" fill="#FF6B5F" stroke="white" stroke-width="3" />
         </svg>
-        <span>Teach GPT</span>
+        <span>Teach</span>
       </div>
     </header>
     <main id="app" aria-live="polite"></main>
@@ -176,7 +176,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
 
     async function initialize() {
       const initialized = await request("ui/initialize", {
-        appInfo: { name: "teach-gpt-widget", version: "0.2.0" },
+        appInfo: { name: "teach-widget", version: "0.2.0" },
         appCapabilities: {},
         protocolVersion: "2026-01-26"
       });
@@ -191,7 +191,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
       const cleanArgs = Object.fromEntries(Object.entries(args || {}).filter(([, value]) => value !== undefined));
       const response = await request("tools/call", { name, arguments: cleanArgs });
       if (response?.isError) {
-        const message = response.content?.find?.((item) => item.type === "text")?.text || "Teach GPT tool call failed.";
+        const message = response.content?.find?.((item) => item.type === "text")?.text || "Teach tool call failed.";
         throw new Error(message);
       }
       return response;
@@ -240,7 +240,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
 
     function processingView() {
       return '<div class="stack"><p class="eyebrow">Processing</p><h1>Turning the demonstration into a process…</h1>' +
-        '<p>Teach GPT is extracting bounded frames and asking GPT-5.6 for structured labels.</p></div>';
+        '<p>Teach is extracting bounded frames and asking GPT-5.6 for structured labels.</p></div>';
     }
 
     function reviewView(analysis) {

@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" fill="none">
-  <rect x="4" y="4" width="88" height="88" rx="24" fill="#6D5EF8"/>
-  <path d="M25 30h46M48 30v42M30 51h36" stroke="white" stroke-width="9" stroke-linecap="round"/>
-  <circle cx="70" cy="70" r="12" fill="#FF6B5F" stroke="white" stroke-width="4"/>
-  <text x="112" y="61" fill="#18171C" font-family="system-ui, sans-serif" font-size="44" font-weight="750">Teach GPT</text>
-</svg>

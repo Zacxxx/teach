@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Teach GPT - Show Codex how",
+  title: "Teach - Show Codex how",
   description: "Record a Linux workflow and publish it as a reviewable Codex skill.",
 };
 

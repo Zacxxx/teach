@@ -8,7 +8,7 @@ import {
   reviewAnalysis,
   startRecording,
   stopRecording,
-} from "@teach-gpt/core";
+} from "@teach/core";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";

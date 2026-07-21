@@ -5,11 +5,11 @@ const [command, ...args] = process.argv.slice(2);
 
 async function main(): Promise<void> {
   if (command === "demo") {
-    process.env.TEACH_GPT_ANALYZER ||= "fixture";
-    process.env.TEACH_GPT_RECORDER ||= "demo";
+    process.env.TEACH_ANALYZER ||= "fixture";
+    process.env.TEACH_RECORDER ||= "demo";
     const session = await createSession({
       name: "Export a reviewed workflow summary",
-      description: "Judge-safe demonstration of the full Teach GPT lifecycle.",
+      description: "Judge-safe demonstration of the full Teach lifecycle.",
     });
     await markReady(session.id);
     await startRecording(session.id);
@@ -22,7 +22,7 @@ async function main(): Promise<void> {
       session_id: session.id,
       state: published.state,
       replayability: analysis.replayability.status,
-      session_path: `${process.env.TEACH_GPT_HOME}/sessions/${session.id}`,
+      session_path: `${process.env.TEACH_HOME}/sessions/${session.id}`,
       skill: published.published_skill,
     }, null, 2));
     return;
@@ -37,7 +37,7 @@ async function main(): Promise<void> {
     console.log(JSON.stringify({ session, analysis }, null, 2));
     return;
   }
-  throw new Error("usage: teach-gpt demo | list | show <session-id>");
+  throw new Error("usage: teach demo | list | show <session-id>");
 }
 
 main().catch((error) => {

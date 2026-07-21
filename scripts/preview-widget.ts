@@ -1,6 +1,6 @@
 import { TEACH_WIDGET_HTML } from "../packages/mcp/src/widget.ts";
 
-const port = Number(process.env.TEACH_GPT_WIDGET_PORT || 3142);
+const port = Number(process.env.TEACH_WIDGET_PORT || 3142);
 const widgetSource = JSON.stringify(TEACH_WIDGET_HTML).replace(/<\//g, "<\\/");
 
 const preview = `<!doctype html>
@@ -8,14 +8,14 @@ const preview = `<!doctype html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Teach GPT widget preview</title>
+  <title>Teach widget preview</title>
   <style>
     body { margin: 0; background: #eee9e1; font-family: system-ui, sans-serif; }
     iframe { display: block; width: min(820px, calc(100% - 32px)); height: 820px; margin: 24px auto; border: 0; }
   </style>
 </head>
 <body>
-  <iframe id="widget" title="Teach GPT MCP Apps preview"></iframe>
+  <iframe id="widget" title="Teach MCP Apps preview"></iframe>
   <script>
     const frame = document.querySelector("#widget");
     frame.srcdoc = ${widgetSource};
@@ -64,7 +64,7 @@ const preview = `<!doctype html>
       if (!message || message.jsonrpc !== "2.0" || message.id == null) return;
       if (message.method === "ui/initialize") return replyRaw(message.id, {
         protocolVersion: "2026-01-26",
-        hostInfo: { name: "teach-gpt-preview", version: "0.2.0" },
+        hostInfo: { name: "teach-preview", version: "0.2.0" },
         hostCapabilities: {},
         hostContext: { theme, styles: { variables } }
       });
@@ -113,4 +113,4 @@ Bun.serve({
   },
 });
 
-console.log(`Teach GPT widget preview: http://127.0.0.1:${port}`);
+console.log(`Teach widget preview: http://127.0.0.1:${port}`);

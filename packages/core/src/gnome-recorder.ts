@@ -36,7 +36,7 @@ export async function startGnomeRecorder(
 ): Promise<string> {
   if (recorders.has(sessionId)) throw new Error("gnome_recording_already_started");
   const child = spawn("gjs", ["-c", GNOME_RECORDER_HELPER], {
-    env: { ...env, TEACH_GPT_RECORDING_PATH: requestedPath },
+    env: { ...env, TEACH_RECORDING_PATH: requestedPath },
     stdio: ["pipe", "pipe", "pipe"],
   });
   const handle: RecorderHandle = {
@@ -210,7 +210,7 @@ function emit(value) {
   print(JSON.stringify(value));
 }
 
-const recordingPath = GLib.getenv("TEACH_GPT_RECORDING_PATH");
+const recordingPath = GLib.getenv("TEACH_RECORDING_PATH");
 const loop = GLib.MainLoop.new(null, false);
 let stopping = false;
 let proxy;
@@ -252,7 +252,7 @@ try {
     emit({ event: "error", name, message });
     loop.quit();
   });
-  if (GLib.getenv("TEACH_GPT_RECORDER_PROBE_ONLY") === "1") {
+  if (GLib.getenv("TEACH_RECORDER_PROBE_ONLY") === "1") {
     emit({ event: "probe", success: true });
     imports.system.exit(0);
   }

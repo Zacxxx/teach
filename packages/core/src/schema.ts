@@ -1,6 +1,6 @@
 export const processAnalysisSchema = {
   $schema: "https://json-schema.org/draft/2020-12/schema",
-  title: "Teach GPT process analysis",
+  title: "Teach process analysis",
   type: "object",
   additionalProperties: false,
   properties: {

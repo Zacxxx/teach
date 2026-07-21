@@ -1,0 +1,47 @@
+{
+  "name": "teach",
+  "version": "0.2.0+codex.20260721121900",
+  "description": "Record a Linux workflow through native embedded controls, analyze it with GPT-5.6, review its process labels, and publish it as a reusable Codex skill.",
+  "author": {
+    "name": "Zacxxx Pinson-Tilche",
+    "url": "https://github.com/Zacxxx"
+  },
+  "homepage": "https://github.com/Zacxxx/teach",
+  "repository": "https://github.com/Zacxxx/teach",
+  "license": "Apache-2.0",
+  "keywords": [
+    "teach",
+    "record-and-replay",
+    "linux",
+    "workflow",
+    "skills",
+    "computer-use"
+  ],
+  "skills": "./skills/",
+  "mcpServers": "./.mcp.json",
+  "interface": {
+    "displayName": "Teach",
+    "shortDescription": "Turn Linux demonstrations into Codex skills",
+    "longDescription": "Teach records an explicitly authorized Linux workflow, uses GPT-5.6 to create a richly labeled and reviewable process, assesses whether Codex can replay it, and publishes the reviewed result as a portable skill.",
+    "developerName": "Zacxxx Pinson-Tilche",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive UI",
+      "Native Linux Recording",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/Zacxxx/teach",
+    "privacyPolicyURL": "https://github.com/Zacxxx/teach/blob/main/SECURITY.md",
+    "termsOfServiceURL": "https://github.com/Zacxxx/teach/blob/main/LICENSE",
+    "defaultPrompt": [
+      "Teach Codex a workflow by recording me",
+      "Review and publish my latest taught process",
+      "List the workflows I taught Codex"
+    ],
+    "brandColor": "#6D5EF8",
+    "composerIcon": "./assets/icon.svg",
+    "logo": "./assets/logo.svg",
+    "screenshots": []
+  }
+}

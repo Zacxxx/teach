@@ -1,4 +1,4 @@
-import { getAnalysis, listSessions } from "@teach-gpt/core";
+import { getAnalysis, listSessions } from "@teach/core";
 import { TeachDashboard } from "../components/teach-dashboard";
 
 export const dynamic = "force-dynamic";

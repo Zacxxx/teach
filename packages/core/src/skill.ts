@@ -36,7 +36,9 @@ export async function publishSkill(id: string): Promise<TeachSession> {
     session = await getSession(id);
   }
   const skill = await validateSkill(session.draft_skill_path!);
-  const root = process.env.TEACH_GPT_SKILLS_HOME?.trim() || join(homedir(), ".agents", "skills");
+  const root = process.env.TEACH_SKILLS_HOME?.trim()
+    || process.env.TEACH_GPT_SKILLS_HOME?.trim()
+    || join(homedir(), ".agents", "skills");
   await mkdir(root, { recursive: true, mode: 0o700 });
   let name = skill.name;
   let destination = join(root, name);

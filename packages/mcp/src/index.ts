@@ -20,15 +20,15 @@ import {
   reviewAnalysis,
   startRecording,
   stopRecording,
-} from "@teach-gpt/core";
+} from "@teach/core";
 import { TEACH_WIDGET_HTML, TEACH_WIDGET_URI } from "./widget.ts";
 
 const server = new McpServer({
-  name: "teach-gpt",
+  name: "teach",
   version: "0.2.0",
-  websiteUrl: "https://github.com/Zacxxx/teach-gpt",
+  websiteUrl: "https://github.com/Zacxxx/teach",
 }, {
-  instructions: "When a user wants to teach a workflow, call teach_open immediately. The embedded Teach GPT UI is the primary metadata, consent, recording, review, optimization, and publishing surface. Do not replace its buttons with prose questions unless the host cannot render MCP Apps UI. Never call teach_start before a separate explicit UI click or ready response.",
+  instructions: "When a user wants to teach a workflow, call teach_open immediately. The embedded Teach UI is the primary metadata, consent, recording, review, optimization, and publishing surface. Do not replace its buttons with prose questions unless the host cannot render MCP Apps UI. Never call teach_start before a separate explicit UI click or ready response.",
 });
 
 const mutating = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };
@@ -36,7 +36,7 @@ const readOnly = { readOnlyHint: true, destructiveHint: false, openWorldHint: fa
 
 registerAppResource(
   server,
-  "teach-gpt-workflow-controls",
+  "teach-workflow-controls",
   TEACH_WIDGET_URI,
   {},
   async () => ({
@@ -49,18 +49,18 @@ registerAppResource(
           prefersBorder: false,
           csp: { connectDomains: [], resourceDomains: [] },
         },
-        "openai/widgetDescription": "Interactive Teach GPT controls for metadata, explicit recording consent, stopping, review, optimization, and skill publishing.",
+        "openai/widgetDescription": "Interactive Teach controls for metadata, explicit recording consent, stopping, review, optimization, and skill publishing.",
       },
     }],
   }),
 );
 
 server.registerTool("teach_open", {
-  title: "Open Teach GPT controls",
-  description: "Render the native embedded Teach GPT workflow UI. Call this first whenever the user asks to teach or record a workflow.",
+  title: "Open Teach controls",
+  description: "Render the native embedded Teach workflow UI. Call this first whenever the user asks to teach or record a workflow.",
   inputSchema: {},
   annotations: readOnly,
-  _meta: widgetMeta("Opening Teach GPT…", "Teach GPT is ready"),
+  _meta: widgetMeta("Opening Teach…", "Teach is ready"),
 }, async () => widgetResult({
   stage: "setup",
   recorder: probeRecordingSupport(),
@@ -191,7 +191,7 @@ server.registerTool("teach_publish", {
 
 server.registerTool("teach_list", {
   title: "List taught workflows",
-  description: "List local Teach GPT sessions and their current lifecycle states.",
+  description: "List local Teach sessions and their current lifecycle states.",
   inputSchema: {},
   annotations: readOnly,
 }, async () => result({ sessions: await listSessions() }));

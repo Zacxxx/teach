@@ -13,7 +13,7 @@ validate-plugin:
 	bun run scripts/validate-repo.ts
 
 demo:
-	TEACH_GPT_HOME=$$(mktemp -d) TEACH_GPT_SKILLS_HOME=$$(mktemp -d) TEACH_GPT_ANALYZER=fixture TEACH_GPT_RECORDER=demo bun run demo
+	TEACH_HOME=$$(mktemp -d) TEACH_SKILLS_HOME=$$(mktemp -d) TEACH_ANALYZER=fixture TEACH_RECORDER=demo bun run demo
 
 check:
 	bun run check

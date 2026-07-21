@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { existsSync } from "node:fs";
 import {
   appendFile,
   chmod,
@@ -25,9 +26,12 @@ const transitions: Record<TeachState, TeachState[]> = {
 };
 
 export function teachHome(): string {
-  if (process.env.TEACH_GPT_HOME?.trim()) return process.env.TEACH_GPT_HOME;
+  const configured = process.env.TEACH_HOME?.trim() || process.env.TEACH_GPT_HOME?.trim();
+  if (configured) return configured;
   const dataHome = process.env.XDG_DATA_HOME?.trim() || join(homedir(), ".local", "share");
-  return join(dataHome, "teach-gpt");
+  const preferred = join(dataHome, "teach");
+  const legacy = join(dataHome, "teach-gpt");
+  return existsSync(preferred) || !existsSync(legacy) ? preferred : legacy;
 }
 
 export function sessionDir(id: string): string {

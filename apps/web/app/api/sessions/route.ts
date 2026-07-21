@@ -1,4 +1,4 @@
-import { createSession, listSessions } from "@teach-gpt/core";
+import { createSession, listSessions } from "@teach/core";
 import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";

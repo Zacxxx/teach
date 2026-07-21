@@ -106,7 +106,7 @@ export function TeachDashboard({ initialSessions, initialAnalysis }: { initialSe
   return (
     <main>
       <header className="topbar">
-        <a className="brand" href="#top" aria-label="Teach GPT home"><span className="brand-mark">T<span /></span><strong>Teach GPT</strong></a>
+        <a className="brand" href="#top" aria-label="Teach home"><span className="brand-mark">T<span /></span><strong>Teach</strong></a>
         <span className="open-source"><Sparkles size={14} /> Open source · Linux first</span>
       </header>
 
@@ -149,7 +149,7 @@ export function TeachDashboard({ initialSessions, initialAnalysis }: { initialSe
         </section>
       </section>
 
-      <footer><span>Independent open-source project for OpenAI Build Week 2026.</span><a href="https://github.com/Zacxxx/teach-gpt">GitHub <ArrowRight size={14} /></a></footer>
+      <footer><span>Independent open-source project for OpenAI Build Week 2026.</span><a href="https://github.com/Zacxxx/teach">GitHub <ArrowRight size={14} /></a></footer>
     </main>
   );
 }

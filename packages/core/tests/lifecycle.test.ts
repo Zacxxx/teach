@@ -14,6 +14,7 @@ import {
   publishSkill,
   startRecording,
   stopRecording,
+  teachHome,
 } from "../src/index.ts";
 
 test("graphical session bus is discovered without inherited desktop variables", () => {
@@ -27,12 +28,27 @@ test("graphical session bus is discovered without inherited desktop variables", 
   );
 });
 
+test("the renamed runtime still honors the legacy data-home override", () => {
+  const current = process.env.TEACH_HOME;
+  const legacy = process.env.TEACH_GPT_HOME;
+  delete process.env.TEACH_HOME;
+  process.env.TEACH_GPT_HOME = "/tmp/teach-legacy-data";
+  try {
+    assert.equal(teachHome(), "/tmp/teach-legacy-data");
+  } finally {
+    if (current === undefined) delete process.env.TEACH_HOME;
+    else process.env.TEACH_HOME = current;
+    if (legacy === undefined) delete process.env.TEACH_GPT_HOME;
+    else process.env.TEACH_GPT_HOME = legacy;
+  }
+});
+
 test("fixture journey records consent, labels the process, and publishes a skill", async () => {
-  const root = await mkdtemp(join(tmpdir(), "teach-gpt-test-"));
-  process.env.TEACH_GPT_HOME = join(root, "data");
-  process.env.TEACH_GPT_SKILLS_HOME = join(root, "skills");
-  process.env.TEACH_GPT_RECORDER = "demo";
-  process.env.TEACH_GPT_ANALYZER = "fixture";
+  const root = await mkdtemp(join(tmpdir(), "teach-test-"));
+  process.env.TEACH_HOME = join(root, "data");
+  process.env.TEACH_SKILLS_HOME = join(root, "skills");
+  process.env.TEACH_RECORDER = "demo";
+  process.env.TEACH_ANALYZER = "fixture";
   try {
     const created = await createSession({ name: "Prepare handoff", description: "Create the reviewed handoff summary." });
     assert.equal(created.state, "draft");
@@ -55,7 +71,7 @@ test("fixture journey records consent, labels the process, and publishes a skill
     assert.match(skill, /^---\nname: prepare-handoff/m);
     assert.match(skill, /Output contract/);
 
-    const events = await readFile(join(process.env.TEACH_GPT_HOME, "sessions", created.id, "events.jsonl"), "utf8");
+    const events = await readFile(join(process.env.TEACH_HOME, "sessions", created.id, "events.jsonl"), "utf8");
     assert.doesNotMatch(events, /raw_keystroke|recording\.webm/);
     assert.match(events, /recording_authorized/);
     assert.match(events, /skill_published/);
@@ -65,9 +81,9 @@ test("fixture journey records consent, labels the process, and publishes a skill
 });
 
 test("recording cannot start before a separate authorization transition", async () => {
-  const root = await mkdtemp(join(tmpdir(), "teach-gpt-test-"));
-  process.env.TEACH_GPT_HOME = root;
-  process.env.TEACH_GPT_RECORDER = "demo";
+  const root = await mkdtemp(join(tmpdir(), "teach-test-"));
+  process.env.TEACH_HOME = root;
+  process.env.TEACH_RECORDER = "demo";
   try {
     const session = await createSession();
     await assert.rejects(startRecording(session.id), /recording_not_authorized/);
@@ -78,9 +94,9 @@ test("recording cannot start before a separate authorization transition", async 
 });
 
 test("a failed capture is recoverable without leaving the global recording lock", { timeout: 12_000 }, async () => {
-  const root = await mkdtemp(join(tmpdir(), "teach-gpt-test-"));
-  process.env.TEACH_GPT_HOME = root;
-  process.env.TEACH_GPT_RECORDER = "demo";
+  const root = await mkdtemp(join(tmpdir(), "teach-test-"));
+  process.env.TEACH_HOME = root;
+  process.env.TEACH_RECORDER = "demo";
   try {
     const session = await createSession();
     await markReady(session.id);

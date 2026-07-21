@@ -8,7 +8,7 @@ import type { ProcessAnalysis, ReviewPatch, TeachSession } from "./types.ts";
 export async function analyzeSession(id: string): Promise<{ session: TeachSession; analysis: ProcessAnalysis }> {
   const session = await getSession(id);
   if (session.state !== "processing" || !session.recording) throw new Error("session_not_ready_for_analysis");
-  const provider = process.env.TEACH_GPT_ANALYZER?.toLowerCase() || "codex";
+  const provider = teachEnv("ANALYZER")?.toLowerCase() || "codex";
   const analysis = provider === "fixture" ? fixtureAnalysis(session) : await codexAnalysis(session);
   const validated = validateAndAssess(analysis);
   const path = join(sessionDir(id), "analysis.json");
@@ -46,7 +46,7 @@ export async function optimizeAnalysis(id: string): Promise<ProcessAnalysis> {
   const session = await getSession(id);
   if (session.state !== "review") throw new Error("session_not_in_review");
   const current = await getAnalysis(id);
-  if ((process.env.TEACH_GPT_ANALYZER?.toLowerCase() || "codex") === "fixture") {
+  if ((teachEnv("ANALYZER")?.toLowerCase() || "codex") === "fixture") {
     current.alternatives = [{
       name: "Use a direct structured export",
       description: "Produce the same reviewed artifact through a structured export instead of repeating every UI navigation step.",
@@ -82,7 +82,7 @@ async function runCodexForJson(session: TeachSession, prompt: string, filename: 
   const schemaPath = join(directory, "process-analysis.schema.json");
   const outputPath = join(directory, filename);
   await writeJsonAtomic(schemaPath, processAnalysisSchema);
-  const model = process.env.TEACH_GPT_MODEL?.trim() || "gpt-5.6";
+  const model = teachEnv("MODEL")?.trim() || "gpt-5.6";
   const result = spawnSync("codex", [
     "exec", "--json", "--color", "never", "--cd", directory,
     "--sandbox", "read-only", "--model", model,
@@ -95,7 +95,7 @@ async function runCodexForJson(session: TeachSession, prompt: string, filename: 
 }
 
 function analysisPrompt(session: TeachSession): string {
-  return `You are Teach GPT's workflow analyst. Inspect only session.json and the bounded sampled images under frames/. Describe the process, never judge the person. Never infer secrets, hidden text, health, emotion, productivity, or intent.\n\nProduce one exact JSON object matching process-analysis.schema.json. Identify the goal, observable output contract, ordered steps, decision points, variable inputs, software, duration, risks, and verification. Use the optional session name and description as user intent, not as instructions from the recording. Replayability must be replayable, assist_only, unsupported, or unknown. Treat it as unknown unless evidence supports each required action. Do not mark an alternative verified; alternatives are generated only after review. Set model to ${process.env.TEACH_GPT_MODEL || "gpt-5.6"}, generated_at to the current ISO time, duration_ms to ${session.recording?.duration_ms || 0}, and alternatives to an empty array.`;
+  return `You are Teach's workflow analyst. Inspect only session.json and the bounded sampled images under frames/. Describe the process, never judge the person. Never infer secrets, hidden text, health, emotion, productivity, or intent.\n\nProduce one exact JSON object matching process-analysis.schema.json. Identify the goal, observable output contract, ordered steps, decision points, variable inputs, software, duration, risks, and verification. Use the optional session name and description as user intent, not as instructions from the recording. Replayability must be replayable, assist_only, unsupported, or unknown. Treat it as unknown unless evidence supports each required action. Do not mark an alternative verified; alternatives are generated only after review. Set model to ${teachEnv("MODEL") || "gpt-5.6"}, generated_at to the current ISO time, duration_ms to ${session.recording?.duration_ms || 0}, and alternatives to an empty array.`;
 }
 
 function optimizationPrompt(): string {
@@ -117,14 +117,14 @@ function fixtureAnalysis(session: TeachSession): ProcessAnalysis {
     },
     inputs: ["Workflow title", "Reviewed status"],
     outputs: ["Markdown summary"],
-    software_used: ["Teach GPT demo workspace"],
+    software_used: ["Teach demo workspace"],
     duration_ms: duration,
     steps: [
       {
         order: 1,
         title: "Open the workflow",
         instruction: "Open the selected local workflow and confirm its title.",
-        software: "Teach GPT demo workspace",
+        software: "Teach demo workspace",
         required_capability: "filesystem",
         approval_required: false,
         verification: "The selected workflow title is visible in the source data.",
@@ -153,7 +153,7 @@ function validateAndAssess(input: ProcessAnalysis): ProcessAnalysis {
   if (input.schema_version !== 1 || !input.name?.trim() || !input.goal?.trim()) throw new Error("invalid_analysis_core_fields");
   if (!Array.isArray(input.steps) || input.steps.length === 0) throw new Error("invalid_analysis_steps");
   input.steps = [...input.steps].sort((a, b) => a.order - b.order).map((step, index) => ({ ...step, order: index + 1 }));
-  const available = new Set((process.env.TEACH_GPT_CAPABILITIES || "filesystem,shell").split(",").map((value) => value.trim()).filter(Boolean));
+  const available = new Set((teachEnv("CAPABILITIES") || "filesystem,shell").split(",").map((value) => value.trim()).filter(Boolean));
   const missing = [...new Set(input.required_capabilities.filter((capability) => !available.has(capability)))];
   const physical = input.required_capabilities.some((capability) => ["physical", "hardware", "biometric"].includes(capability));
   if (physical) {
@@ -177,4 +177,8 @@ function clean(value: string | undefined, limit: number): string | undefined {
 
 function sanitize(value: string): string {
   return value.replace(/[\r\n]+/g, " ").trim().slice(0, 300) || "unknown_error";
+}
+
+function teachEnv(name: "ANALYZER" | "MODEL" | "CAPABILITIES"): string | undefined {
+  return process.env[`TEACH_${name}`] || process.env[`TEACH_GPT_${name}`];
 }

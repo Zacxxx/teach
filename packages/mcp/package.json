@@ -1,14 +1,14 @@
 {
-  "name": "@teach-gpt/mcp",
+  "name": "@teach/mcp",
   "version": "0.2.0",
-  "description": "Local MCP interface for Teach GPT",
+  "description": "Local MCP interface for Teach",
   "license": "Apache-2.0",
   "type": "module",
   "scripts": {
     "build": "tsc --noEmit",
-    "bundle": "bun build src/index.ts --target=bun --minify --outfile ../../plugins/teach-gpt/bin/teach-gpt-mcp.js",
-    "bundle:linux": "bun build src/index.ts --compile --minify --outfile ../../plugins/teach-gpt/bin/teach-gpt-mcp-linux-x64",
-    "bundle:plugin": "bun run bundle && bun run bundle:linux && gzip -9 -f ../../plugins/teach-gpt/bin/teach-gpt-mcp-linux-x64",
+    "bundle": "bun build src/index.ts --target=bun --minify --outfile ../../plugins/teach/bin/teach-mcp.js",
+    "bundle:linux": "bun build src/index.ts --compile --minify --outfile ../../plugins/teach/bin/teach-mcp-linux-x64",
+    "bundle:plugin": "bun run bundle && bun run bundle:linux && gzip -9 -f ../../plugins/teach/bin/teach-mcp-linux-x64",
     "lint": "eslint src",
     "start": "bun run src/index.ts",
     "test": "bun test tests/*.test.ts",
@@ -17,7 +17,7 @@
   "dependencies": {
     "@modelcontextprotocol/ext-apps": "1.7.4",
     "@modelcontextprotocol/sdk": "1.29.0",
-    "@teach-gpt/core": "workspace:*",
+    "@teach/core": "workspace:*",
     "zod": "4.4.3"
   },
   "devDependencies": {

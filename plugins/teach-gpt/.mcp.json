@@ -1,9 +1,0 @@
-{
-  "mcpServers": {
-    "teach-gpt": {
-      "command": "./bin/teach-gpt-mcp",
-      "args": [],
-      "cwd": "."
-    }
-  }
-}
