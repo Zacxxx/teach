@@ -41,6 +41,15 @@ try {
   const opened = await client.callTool({ name: "teach_open", arguments: {} });
   const openContent = opened.structuredContent as { stage?: string; recorder?: { backend?: string } } | undefined;
   checks.push(check("embedded_setup_resource", opened._meta?.["openai/outputTemplate"] === "ui://teach/workflow-v2.html" && openContent?.stage === "setup", opened._meta));
+  const resource = await client.readResource({ uri: "ui://teach/workflow-v2.html" });
+  const widgetHtml = (resource.contents[0] as { text?: string } | undefined)?.text || "";
+  checks.push(check(
+    "codex_native_and_portable_ui_bridges",
+    widgetHtml.includes('typeof window.openai?.callTool === "function"')
+      && widgetHtml.includes("window.openai.callTool(name, cleanArgs)")
+      && widgetHtml.includes('request("tools/call", { name, arguments: cleanArgs })'),
+    `native_call_tool=${widgetHtml.includes("window.openai.callTool(name, cleanArgs)")} portable_tools_call=${widgetHtml.includes('request("tools/call", { name, arguments: cleanArgs })')}`,
+  ));
   checks.push(check("deterministic_recorder_only", openContent?.recorder?.backend === "demo", openContent?.recorder || "missing recorder"));
 
   const created = await client.callTool({ name: "teach_begin", arguments: {} });

@@ -17,6 +17,8 @@ temporary storage and the synthetic recorder/analyzer. It grades:
 
 - the complete ten-tool surface;
 - the embedded MCP Apps setup resource and output template;
+- both the immediate Codex `window.openai.callTool` action path and portable
+  MCP Apps `tools/call` fallback;
 - the user-shaped Skip, Ready, record, End recording, analysis, label review,
   output-equivalent optimization, and publish journey;
 - persistence and retrieval of the published process and generated skill;

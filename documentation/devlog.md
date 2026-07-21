@@ -167,6 +167,22 @@ publish, list, and fetch the stored workflow. The expanded Linux run passed all
 12 checks, both authenticated routing cases passed all 12 checks, and the full
 repository verification remained green.
 
+## 2026-07-21 - Embedded action timeout
+
+A real installed test rendered the Teach panel but clicking its first action
+ended with “Codex did not return the UI action in time.” The recorder was never
+reached. Teach had made every button wait on a manual MCP Apps `ui/initialize`
+exchange even when Codex had already exposed its native
+`window.openai.callTool` component API.
+
+The widget now feature-detects and immediately uses Codex's native action path,
+while retaining JSON-RPC `tools/call` for standards-only MCP Apps hosts. It also
+listens for the official `openai:set_globals` update event. A browser-context
+regression executes the real embedded script, clicks Skip, and proves that
+`teach_begin({})` reaches consent without an initialization postMessage. The
+packaged contract separately requires both bridge paths and continues through
+the complete teaching lifecycle.
+
 ## Decision log
 
 | Decision | Why |
@@ -181,7 +197,7 @@ repository verification remained green.
 | Embedded MCP Apps component | Make the full lifecycle usable inside Codex with native controls. |
 | Bundled compressed runtimes | Make plugin installation sufficient on Linux, macOS, and Windows without a JavaScript runtime install. |
 | Persistent GNOME D-Bus sender | GNOME binds capture lifetime to the caller; the sender must survive until explicit stop. |
-| Standard MCP Apps `tools/call` | Keep the component portable across Codex and ChatGPT hosts. |
+| Native-first dual UI bridge | Use Codex's immediate `window.openai.callTool` path when exposed while retaining portable MCP Apps `tools/call`. |
 | Single `teach` identity | Keep invocation, repository, packages, UI, and marketplace naming predictable. |
 | Inherit Codex model by default | Avoid hard-coding a model slug that may not be enabled for the user's current authentication surface. |
 | Content-addressed runtime cache | Ensure every installed plugin archive executes its own bundled MCP runtime on every OS. |

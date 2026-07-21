@@ -6,6 +6,78 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
+import vm from "node:vm";
+import { TEACH_WIDGET_HTML } from "../src/widget.ts";
+
+test("embedded Skip uses Codex native callTool without waiting for MCP initialization", async () => {
+  const script = TEACH_WIDGET_HTML.match(/<script type="module">([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(script, "widget module script should be embedded");
+
+  const toolCalls: Array<{ name: string; args: Record<string, unknown> }> = [];
+  const postMessages: unknown[] = [];
+  const listeners = new Map<string, (event: Record<string, unknown>) => void>();
+  let click: ((event: { target: { closest: () => { disabled: boolean; dataset: { action: string } } } }) => void) | undefined;
+  const app = {
+    innerHTML: "",
+    classList: { toggle: () => undefined },
+    addEventListener: (name: string, listener: typeof click) => {
+      if (name === "click") click = listener;
+    },
+  };
+  const root = {
+    dataset: {} as Record<string, string>,
+    style: { colorScheme: "", setProperty: () => undefined },
+  };
+  const openai = {
+    toolOutput: { stage: "setup" },
+    callTool: async (name: string, args: Record<string, unknown>) => {
+      toolCalls.push({ name, args });
+      return {
+        structuredContent: {
+          stage: "consent",
+          session: { id: "00000000-0000-4000-8000-000000000001", state: "draft" },
+          recorder: { supported: true },
+        },
+      };
+    },
+  };
+  const parent = { postMessage: (message: unknown) => postMessages.push(message) };
+  const windowObject = {
+    openai,
+    parent,
+    matchMedia: () => ({ matches: false, addEventListener: () => undefined }),
+    addEventListener: (name: string, listener: (event: Record<string, unknown>) => void) => listeners.set(name, listener),
+  };
+  const documentObject = {
+    documentElement: root,
+    head: { append: () => undefined },
+    querySelector: (selector: string) => selector === "#app" ? app : null,
+    createElement: () => ({ id: "", textContent: "" }),
+  };
+
+  vm.runInNewContext(script, {
+    window: windowObject,
+    document: documentObject,
+    setTimeout,
+    clearTimeout,
+    setInterval: () => 0,
+    console,
+    Promise,
+    Object,
+    String,
+    Date,
+    Math,
+    JSON,
+  });
+  assert.ok(click, "widget should register its click handler");
+
+  click({ target: { closest: () => ({ disabled: false, dataset: { action: "skip" } }) } });
+  await new Promise((resolve) => setTimeout(resolve, 0));
+
+  assert.deepEqual(toolCalls, [{ name: "teach_begin", args: {} }]);
+  assert.equal(postMessages.length, 0, "native Codex actions must not wait on the JSON-RPC initialization bridge");
+  assert.match(app.innerHTML, /I’m ready — start recording/);
+});
 
 test("packaged launchers key extracted runtimes by archive content", async () => {
   const packageRoot = resolve(dirname(dirname(fileURLToPath(import.meta.url))), "..", "..");
@@ -61,8 +133,10 @@ test("MCP server exposes the complete teaching lifecycle", { timeout: 20_000 }, 
     assert.match(widgetText, /brand-mark/);
     assert.match(widgetText, /host-context-changed/);
     assert.match(widgetText, /color-background-primary/);
+    assert.match(widgetHtml, /typeof window\.openai\?\.callTool === "function"/);
+    assert.match(widgetHtml, /window\.openai\.callTool\(name, cleanArgs\)/);
     assert.match(widgetHtml, /request\("tools\/call", \{ name, arguments: cleanArgs \}\)/);
-    assert.doesNotMatch(widgetHtml, /window\.openai\?\.callTool/);
+    assert.match(widgetHtml, /openai:set_globals/);
     assert.doesNotMatch(widgetText, /Visible capture · local artifacts/);
     assert.doesNotMatch(widgetText, /New teaching/);
     assert.doesNotMatch(widgetText, /What will you show Codex/);

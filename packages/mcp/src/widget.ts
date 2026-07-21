@@ -184,11 +184,20 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
       notify("ui/notifications/initialized", {});
     }
 
-    const bridgeReady = initialize().catch(() => null);
+    // Codex exposes the Apps SDK compatibility bridge directly. Do not make a
+    // native button click wait for an unanswered ui/initialize request when
+    // callTool is already available. Standards-only MCP Apps hosts continue to
+    // use the JSON-RPC bridge below.
+    const bridgeReady = typeof window.openai?.callTool === "function"
+      ? Promise.resolve(null)
+      : initialize().catch(() => null);
 
     async function callTool(name, args) {
-      await bridgeReady;
       const cleanArgs = Object.fromEntries(Object.entries(args || {}).filter(([, value]) => value !== undefined));
+      if (typeof window.openai?.callTool === "function") {
+        return window.openai.callTool(name, cleanArgs);
+      }
+      await bridgeReady;
       const response = await request("tools/call", { name, arguments: cleanArgs });
       if (response?.isError) {
         const message = response.content?.find?.((item) => item.type === "text")?.text || "Teach tool call failed.";
@@ -360,6 +369,19 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
       } else if (message.method === "ui/notifications/host-context-changed") {
         applyHostContext(message.params || {});
       }
+    }, { passive: true });
+
+    window.addEventListener("openai:set_globals", (event) => {
+      const globals = event.detail?.globals;
+      if (globals?.toolOutput) {
+        data = globals.toolOutput;
+        errorMessage = "";
+      }
+      const nextContext = {};
+      if (globals?.theme) nextContext.theme = globals.theme;
+      if (globals?.styles) nextContext.styles = globals.styles;
+      applyHostContext(nextContext);
+      render();
     }, { passive: true });
 
     render();

@@ -124,6 +124,13 @@ would be used normally. Stop immediately after the setup controls are opened.
 Do not create a teaching session and do not start recording.
 ```
 
+```text
+Use $teach. I want to skip optional naming and teach Codex a workflow by
+recording me. Follow the plugin's normal first action, then stop immediately
+after setup controls are opened. Do not create a teaching session and do not
+start recording.
+```
+
 ## User-shaped eval feedback prompt - 2026-07-21
 
 > Run the eval, making sure that it mimics the behavior I would have done so
@@ -132,9 +139,11 @@ Do not create a teaching session and do not start recording.
 This changed the deterministic contract from a direct open-to-publish check
 into the complete Skip-to-published-skill journey documented in the eval guide.
 
-```text
-Use $teach. I want to skip optional naming and teach Codex a workflow by
-recording me. Follow the plugin's normal first action, then stop immediately
-after setup controls are opened. Do not create a teaching session and do not
-start recording.
-```
+## Embedded action timeout feedback - 2026-07-21
+
+> Ran the test and it said Codex did not return the UI action in time.
+
+This exposed a host/widget integration gap that direct MCP calls could not
+catch. The embedded-script regression now clicks Skip through a mocked Codex
+component host, in addition to the packaged protocol and authenticated routing
+evals.
