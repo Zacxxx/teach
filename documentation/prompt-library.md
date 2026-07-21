@@ -147,3 +147,14 @@ This exposed a host/widget integration gap that direct MCP calls could not
 catch. The embedded-script regression now clicks Skip through a mocked Codex
 component host, in addition to the packaged protocol and authenticated routing
 evals.
+
+## Release-candidate polish prompt - 2026-07-21
+
+> Make the potentially long labelisation step visibly animated so the user
+> knows it has not crashed. Then publish the repository to main, pursue public
+> Codex/ChatGPT store publication with the repository link, and create a
+> complete hackathon demonstration video script under documentation.
+
+This produced the animated analysis heartbeat, elapsed timer, rotating status,
+reduced-motion behavior, public-directory submission dossier, and the final
+under-three-minute directing and voiceover script.

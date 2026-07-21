@@ -183,6 +183,24 @@ regression executes the real embedded script, clicks Skip, and proves that
 packaged contract separately requires both bridge paths and continues through
 the complete teaching lifecycle.
 
+## 2026-07-21 - Release-candidate processing feedback
+
+Real analysis can take long enough that the static processing heading looked
+indistinguishable from a frozen component. The embedded panel now keeps its
+full opacity while busy, animates an orbit and indeterminate progress track,
+rotates plain-language analysis messages, and shows elapsed time. The state is
+announced as active and busy to assistive technology; reduced-motion users keep
+the changing text and timer without CSS animation. The packaged contract eval
+now fails if these heartbeat affordances disappear.
+
+The official Plugins Directory requirements were also checked against the
+release architecture. The repository marketplace is publicly installable, but
+an OpenAI-approved MCP listing currently requires a production HTTPS MCP URL
+and verified host domain. Teach deliberately uses a bundled local MCP process
+to access native desktop recorders. A transparent submission dossier records
+the exact listing, tests, policies, and remaining eligibility gate rather than
+calling a public GitHub marketplace an approved Store listing.
+
 ## Decision log
 
 | Decision | Why |

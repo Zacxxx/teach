@@ -97,12 +97,19 @@ loopback-only because it can control local recording and access recording metada
 
 ## Install the Codex plugin
 
-Add this repository marketplace, install the plugin, and start a new task:
+Add the public repository marketplace, install the plugin, and start a new
+task:
 
 ```bash
-codex plugin marketplace add "$PWD"
+codex plugin marketplace add Zacxxx/teach --ref main
 codex plugin add teach@teach
 ```
+
+For a local source checkout, replace the first command with
+`codex plugin marketplace add "$PWD"`. The GitHub marketplace is publicly
+installable; inclusion in OpenAI's public Plugins Directory is a separate
+review process tracked in the
+[submission dossier](documentation/plugin-directory-submission.md).
 
 Then invoke `@teach`, `$teach`, or say "teach this workflow." Start a new
 Codex task after installation so the plugin index is refreshed. The embedded
@@ -160,6 +167,8 @@ publishing paths. Model output cannot silently publish or execute a workflow.
 - [Platform support and release checklist](documentation/platform-support.md)
 - [Automated evals](documentation/evals.md)
 - [Build Week submission checklist](documentation/build-week-submission.md)
+- [Hackathon demo video script](documentation/hackathon-video-script.md)
+- [Public Plugins Directory submission dossier](documentation/plugin-directory-submission.md)
 
 ## License
 
