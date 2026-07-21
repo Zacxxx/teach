@@ -46,6 +46,15 @@ The safe implementation keeps screen capture explicit, reserves microphone
 narration for a real permission-aware pipeline, and continues to reject raw
 clipboard and keystroke logging.
 
+## Recording failure feedback prompt - 2026-07-21
+
+> Encountered an Invalid MCP tool call params error after recording the
+> teaching, and it did not record the teaching.
+
+This prompted inspection of the real local session artifact and GNOME journal,
+then the persistent D-Bus sender, standard MCP Apps tool-call path, finalized
+video validation, and retry-safe failure handling documented in the devlog.
+
 ## Runtime recording-analysis prompt
 
 The analyzer receives this template together with `session.json`, sampled

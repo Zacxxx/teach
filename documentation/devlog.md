@@ -67,6 +67,23 @@ capture secrets or document bodies. Microphone narration is reserved for a
 separate explicit-consent implementation with native permission and analysis
 support; the UI does not advertise a control that the recorder cannot honor.
 
+## 2026-07-21 - Native recording incident and repair
+
+The first embedded recording attempt appeared to start but produced only a
+48-byte MP4 and later surfaced an `Invalid MCP tool call params` error. GNOME's
+journal showed `Sender has vanished`: the adapter invoked `Screencast` through
+a short-lived `gdbus call`, so GNOME correctly ended capture as soon as that
+D-Bus client exited.
+
+The adapter now keeps one GNOME-native D-Bus sender alive from start through
+stop, records the filename GNOME actually chooses, observes native recorder
+errors, validates the finalized video before analysis, and moves failed
+captures into a retryable state without leaving the global recording marker.
+The embedded component now uses the portable MCP Apps `tools/call` bridge,
+removes undefined values from JSON-RPC arguments, and renders tool failures in
+the panel. A protocol test executes begin, start, stop, and analyze with the
+same argument shapes as the buttons.
+
 ## Decision log
 
 | Decision | Why |
@@ -80,3 +97,5 @@ support; the UI does not advertise a control that the recorder cannot honor.
 | Capability-based replay label | Prevent a model from claiming it can redo unavailable actions. |
 | Embedded MCP Apps component | Make the full lifecycle usable inside Codex with native controls. |
 | Bundled compressed runtime | Make plugin installation sufficient for judges and users on supported Linux. |
+| Persistent GNOME D-Bus sender | GNOME binds capture lifetime to the caller; the sender must survive until explicit stop. |
+| Standard MCP Apps `tools/call` | Keep the component portable across Codex and ChatGPT hosts. |
