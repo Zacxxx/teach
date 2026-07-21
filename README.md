@@ -120,6 +120,7 @@ panel drives the flow:
 ```bash
 make check
 make demo
+bun run eval
 ```
 
 The plugin manifest, Teach skill, TypeScript, tests, production web build, and
@@ -127,6 +128,12 @@ deterministic end-to-end path are all checked. GitHub Actions repeats the
 packaged MCP lifecycle on Linux, Windows, and macOS and validates every bundled
 executable format. Native desktop capture still has a physical-host release
 checklist because headless CI cannot prove OS permission prompts or real pixels.
+
+`bun run eval` executes the packaged plugin as a black box with the deterministic
+recorder and analyzer. `bun run eval:live` is the optional authenticated behavior
+eval: it launches an ephemeral Codex run and verifies that a teaching request's
+first Teach tool is `teach_open`, with no prose fallback, session creation, or
+recording start. See [the eval guide](documentation/evals.md).
 
 ## How Codex and GPT-5.6 were used
 
@@ -151,6 +158,7 @@ publishing paths. Model output cannot silently publish or execute a workflow.
 - [Design](documentation/design.md)
 - [Architecture](documentation/architecture.md)
 - [Platform support and release checklist](documentation/platform-support.md)
+- [Automated evals](documentation/evals.md)
 - [Build Week submission checklist](documentation/build-week-submission.md)
 
 ## License

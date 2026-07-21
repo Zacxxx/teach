@@ -37,6 +37,8 @@ jobs:
         run: brew install ffmpeg
       - run: bun install --frozen-lockfile
       - run: bun run check
+      - name: Run Teach plugin contract eval
+        run: bun run eval
       - run: bun run scripts/validate-repo.ts
 
   packaged-runtimes:

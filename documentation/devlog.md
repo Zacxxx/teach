@@ -143,6 +143,21 @@ deletion. Skill, agent, and MCP-server instructions now make tool presence
 authoritative and permit conversational fallback only after a current
 `teach_open` transport or rendering failure.
 
+## 2026-07-21 - Automated plugin evals
+
+The prior regressions crossed three boundaries that unit tests alone did not
+cover: an installed runtime could be stale, an agent could choose prose instead
+of the available UI tool, and the native app resource could be missing even
+when direct core tests passed. Teach now ships a dedicated eval package.
+
+The contract eval launches the packaged platform executable with isolated
+file-backed state, runs open through publish using the deterministic recorder
+and analyzer, verifies the app resource, and emits a machine-readable score.
+It runs on Linux, macOS, and Windows in every pull request. The optional live
+eval launches an authenticated ephemeral `codex exec --json`, grades the first
+Teach MCP call and forbidden fallback behavior, and deliberately stops before
+session creation or recording authorization.
+
 ## Decision log
 
 | Decision | Why |

@@ -3,6 +3,7 @@ import { join } from "node:path";
 
 const root = process.cwd();
 const pluginRoot = join(root, "plugins", "teach");
+const rootPackage = JSON.parse(await readFile(join(root, "package.json"), "utf8")) as { scripts?: Record<string, string> };
 const manifest = JSON.parse(await readFile(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8")) as Record<string, unknown>;
 
 assert(manifest.name === "teach", "plugin name must match its folder");
@@ -26,6 +27,20 @@ for (const relative of [
   "skills/teach/SKILL.md",
   "skills/teach/agents/openai.yaml",
 ]) await access(join(pluginRoot, relative));
+
+for (const relative of [
+  "documentation/evals.md",
+  "packages/evals/src/cases.ts",
+  "packages/evals/src/contract.ts",
+  "packages/evals/src/live.ts",
+  "packages/evals/src/live-grader.ts",
+  "packages/evals/tests/live-grader.test.ts",
+]) await access(join(root, relative));
+
+assert(rootPackage.scripts?.eval === "bun run --cwd packages/evals contract", "root eval command must run the contract eval");
+assert(rootPackage.scripts?.["eval:live"] === "bun run --cwd packages/evals live", "root live eval command is missing");
+const workflow = await readFile(join(root, ".github", "workflows", "ci.yml"), "utf8");
+assert(workflow.includes("bun run eval"), "CI must run the Teach plugin contract eval");
 
 const skill = await readFile(join(pluginRoot, "skills", "teach", "SKILL.md"), "utf8");
 assert(/^---\r?\nname: teach\r?\ndescription: [^\r\n]+\r?\n---\r?\n/.test(skill), "Teach skill frontmatter is invalid");

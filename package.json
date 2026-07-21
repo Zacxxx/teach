@@ -14,6 +14,8 @@
     "check": "bun run test && bun run typecheck && bun run lint && bun run build",
     "demo": "bun run --cwd packages/core demo",
     "dev": "bun run --cwd apps/web dev -- --hostname 127.0.0.1 --port 3141",
+    "eval": "bun run --cwd packages/evals contract",
+    "eval:live": "bun run --cwd packages/evals live",
     "lint": "bun run --filter '*' lint",
     "mcp": "bun run --cwd packages/mcp start",
     "test": "bun run --filter '*' test",

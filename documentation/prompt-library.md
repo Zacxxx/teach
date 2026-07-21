@@ -111,3 +111,22 @@ available tools, pause for approvals at external effects, verify the declared
 output contract, and report any capability mismatch instead of improvising a
 different result.
 ```
+
+## Plugin-routing eval prompts
+
+These prompts are executed by the optional authenticated live eval. Both are
+bounded before session creation, so the eval can never authorize or start a
+screen recording.
+
+```text
+Use $teach. Teach Codex a workflow by recording me. Call the Teach plugin as it
+would be used normally. Stop immediately after the setup controls are opened.
+Do not create a teaching session and do not start recording.
+```
+
+```text
+Use $teach. I want to skip optional naming and teach Codex a workflow by
+recording me. Follow the plugin's normal first action, then stop immediately
+after setup controls are opened. Do not create a teaching session and do not
+start recording.
+```
