@@ -17,7 +17,9 @@ temporary storage and the synthetic recorder/analyzer. It grades:
 
 - the complete ten-tool surface;
 - the embedded MCP Apps setup resource and output template;
-- setup, consent, recording, stop, analysis, review, and publish transitions;
+- the user-shaped Skip, Ready, record, End recording, analysis, label review,
+  output-equivalent optimization, and publish journey;
+- persistence and retrieval of the published process and generated skill;
 - the panel-first skill instruction; and
 - absence of a native desktop capture during the eval.
 

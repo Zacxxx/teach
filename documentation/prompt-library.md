@@ -124,6 +124,14 @@ would be used normally. Stop immediately after the setup controls are opened.
 Do not create a teaching session and do not start recording.
 ```
 
+## User-shaped eval feedback prompt - 2026-07-21
+
+> Run the eval, making sure that it mimics the behavior I would have done so
+> that we know that everything works properly.
+
+This changed the deterministic contract from a direct open-to-publish check
+into the complete Skip-to-published-skill journey documented in the eval guide.
+
 ```text
 Use $teach. I want to skip optional naming and teach Codex a workflow by
 recording me. Follow the plugin's normal first action, then stop immediately

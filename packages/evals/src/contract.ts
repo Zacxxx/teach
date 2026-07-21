@@ -44,13 +44,35 @@ try {
   checks.push(check("deterministic_recorder_only", openContent?.recorder?.backend === "demo", openContent?.recorder || "missing recorder"));
 
   const created = await client.callTool({ name: "teach_begin", arguments: {} });
-  const createdContent = created.structuredContent as { session?: { id?: string; state?: string } } | undefined;
+  const createdContent = created.structuredContent as { session?: { id?: string; state?: string; name?: string; description?: string } } | undefined;
   const sessionId = createdContent?.session?.id;
-  checks.push(check("session_created_as_draft", Boolean(sessionId) && createdContent?.session?.state === "draft", createdContent?.session || "missing session"));
+  checks.push(check(
+    "metadata_skip_creates_unnamed_draft",
+    Boolean(sessionId)
+      && createdContent?.session?.state === "draft"
+      && !createdContent.session.name
+      && !createdContent.session.description,
+    `state=${createdContent?.session?.state || "missing"} name_present=${Boolean(createdContent?.session?.name)} description_present=${Boolean(createdContent?.session?.description)}`,
+  ));
   if (!sessionId) throw new Error("contract_eval_missing_session_id");
 
   const recording = await client.callTool({ name: "teach_start", arguments: { session_id: sessionId, consent: true } });
-  checks.push(check("consent_bound_recording", (recording.structuredContent as { session?: { state?: string } } | undefined)?.session?.state === "recording", "recording state"));
+  const recordingSession = (recording.structuredContent as {
+    session?: {
+      state?: string;
+      authorization?: { purpose?: string; capture?: { screen?: boolean; microphone?: boolean; raw_keystrokes?: boolean; clipboard?: boolean } };
+    };
+  } | undefined)?.session;
+  checks.push(check(
+    "ready_consent_starts_visible_recording",
+    recordingSession?.state === "recording"
+      && recordingSession.authorization?.purpose === "user_directed_workflow_teaching"
+      && recordingSession.authorization.capture?.screen === true
+      && recordingSession.authorization.capture.microphone === false
+      && recordingSession.authorization.capture.raw_keystrokes === false
+      && recordingSession.authorization.capture.clipboard === false,
+    `state=${recordingSession?.state || "missing"} purpose=${recordingSession?.authorization?.purpose || "missing"} screen=${recordingSession?.authorization?.capture?.screen === true}`,
+  ));
 
   const stopped = await client.callTool({ name: "teach_stop", arguments: { session_id: sessionId } });
   const stoppedSession = (stopped.structuredContent as { session?: { state?: string; recording?: { frame_count?: number } } } | undefined)?.session;
@@ -61,19 +83,97 @@ try {
   ));
 
   const analyzed = await client.callTool({ name: "teach_analyze", arguments: { session_id: sessionId } });
-  const analyzedContent = analyzed.structuredContent as { session?: { state?: string }; analysis?: { steps?: unknown[] } } | undefined;
+  const analyzedContent = analyzed.structuredContent as {
+    session?: { state?: string };
+    analysis?: {
+      name?: string;
+      description?: string;
+      goal?: string;
+      category?: string;
+      duration_ms?: number;
+      software_used?: string[];
+      steps?: unknown[];
+      replayability?: { status?: string };
+    };
+  } | undefined;
+  const analysis = analyzedContent?.analysis;
   checks.push(check(
-    "analysis_reaches_review",
-    analyzedContent?.session?.state === "review" && (analyzedContent.analysis?.steps?.length || 0) > 0,
-    `state=${analyzedContent?.session?.state || "missing"} steps=${analyzedContent?.analysis?.steps?.length || 0}`,
+    "recording_is_labeled_for_review",
+    analyzedContent?.session?.state === "review"
+      && Boolean(analysis?.name)
+      && Boolean(analysis?.description)
+      && Boolean(analysis?.goal)
+      && Boolean(analysis?.category)
+      && typeof analysis?.duration_ms === "number"
+      && (analysis?.software_used?.length || 0) > 0
+      && (analysis?.steps?.length || 0) > 0
+      && analysis?.replayability?.status === "replayable",
+    `state=${analyzedContent?.session?.state || "missing"} labels_complete=${Boolean(analysis?.name && analysis?.description && analysis?.goal && analysis?.category)} steps=${analysis?.steps?.length || 0} replayability=${analysis?.replayability?.status || "missing"}`,
+  ));
+
+  const reviewed = await client.callTool({
+    name: "teach_review",
+    arguments: {
+      session_id: sessionId,
+      name: "Prepare the reviewed weekly handoff",
+      description: "Create the same reviewed Markdown handoff demonstrated during teaching.",
+      goal: "Produce a verified weekly handoff Markdown file.",
+      category: "Team operations",
+    },
+  });
+  const reviewedAnalysis = (reviewed.structuredContent as {
+    analysis?: { name?: string; description?: string; goal?: string; category?: string };
+  } | undefined)?.analysis;
+  checks.push(check(
+    "user_review_edits_are_saved",
+    reviewedAnalysis?.name === "Prepare the reviewed weekly handoff"
+      && reviewedAnalysis.description === "Create the same reviewed Markdown handoff demonstrated during teaching."
+      && reviewedAnalysis.goal === "Produce a verified weekly handoff Markdown file."
+      && reviewedAnalysis.category === "Team operations",
+    `name=${reviewedAnalysis?.name || "missing"} goal=${reviewedAnalysis?.goal || "missing"} category=${reviewedAnalysis?.category || "missing"}`,
+  ));
+
+  const optimized = await client.callTool({ name: "teach_optimize", arguments: { session_id: sessionId } });
+  const optimizedAnalysis = (optimized.structuredContent as {
+    analysis?: { output_contract?: { equivalence_verifier?: string }; alternatives?: Array<{ equivalence_check?: string; verification_status?: string }> };
+  } | undefined)?.analysis;
+  const alternative = optimizedAnalysis?.alternatives?.[0];
+  checks.push(check(
+    "optimization_preserves_output_equivalence",
+    Boolean(alternative)
+      && alternative?.verification_status === "testable"
+      && alternative.equivalence_check === optimizedAnalysis?.output_contract?.equivalence_verifier,
+    `alternatives=${optimizedAnalysis?.alternatives?.length || 0} status=${alternative?.verification_status || "missing"} equivalence_preserved=${Boolean(alternative?.equivalence_check && alternative.equivalence_check === optimizedAnalysis?.output_contract?.equivalence_verifier)}`,
   ));
 
   const published = await client.callTool({ name: "teach_publish", arguments: { session_id: sessionId } });
   const publishedSession = (published.structuredContent as { session?: { state?: string; published_skill?: { path?: string } } } | undefined)?.session;
+  const publishedSkillPath = publishedSession?.published_skill?.path;
+  const skillBody = publishedSkillPath ? await readFile(join(publishedSkillPath, "SKILL.md"), "utf8") : "";
+  const processBody = publishedSkillPath ? await readFile(join(publishedSkillPath, "references", "process.json"), "utf8") : "";
   checks.push(check(
-    "reviewed_skill_published",
-    publishedSession?.state === "published" && Boolean(publishedSession.published_skill?.path),
-    `state=${publishedSession?.state || "missing"} skill_path_present=${Boolean(publishedSession?.published_skill?.path)}`,
+    "reviewed_skill_is_published_with_process",
+    publishedSession?.state === "published"
+      && /^---\nname: prepare-the-reviewed-weekly-handoff\n/.test(skillBody)
+      && skillBody.includes("Produce a verified weekly handoff Markdown file.")
+      && processBody.includes('"category": "Team operations"')
+      && processBody.includes('"alternatives": ['),
+    `state=${publishedSession?.state || "missing"} skill_valid=${/^---\nname: prepare-the-reviewed-weekly-handoff\n/.test(skillBody)} reviewed_goal_present=${skillBody.includes("Produce a verified weekly handoff Markdown file.")} process_present=${processBody.length > 0}`,
+  ));
+
+  const listedSessions = (await client.callTool({ name: "teach_list", arguments: {} })).structuredContent as { sessions?: Array<{ id?: string; state?: string }> } | undefined;
+  const fetched = (await client.callTool({ name: "teach_get", arguments: { session_id: sessionId } })).structuredContent as {
+    session?: { id?: string; state?: string };
+    analysis?: { name?: string; alternatives?: unknown[] };
+  } | undefined;
+  checks.push(check(
+    "published_process_is_stored_and_retrievable",
+    listedSessions?.sessions?.some((session) => session.id === sessionId && session.state === "published") === true
+      && fetched?.session?.id === sessionId
+      && fetched.session.state === "published"
+      && fetched.analysis?.name === "Prepare the reviewed weekly handoff"
+      && (fetched.analysis.alternatives?.length || 0) > 0,
+    `listed=${listedSessions?.sessions?.some((session) => session.id === sessionId) === true} fetched_state=${fetched?.session?.state || "missing"} reviewed_name=${fetched?.analysis?.name || "missing"} alternatives=${fetched?.analysis?.alternatives?.length || 0}`,
   ));
 } catch (error) {
   checks.push(check("contract_completed_without_exception", false, error instanceof Error ? error.message : String(error)));

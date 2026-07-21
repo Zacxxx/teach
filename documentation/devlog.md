@@ -158,6 +158,15 @@ eval launches an authenticated ephemeral `codex exec --json`, grades the first
 Teach MCP call and forbidden fallback behavior, and deliberately stops before
 session creation or recording authorization.
 
+The initial contract stopped at analysis and published immediately. A hands-on
+review found that this did not fully model the product journey. The contract
+now uses every exposed tool and follows the same choices as the reported user
+flow: Skip metadata, Ready, record synthetic actions, End recording, inspect
+generated labels, save review edits, request an output-equivalent alternative,
+publish, list, and fetch the stored workflow. The expanded Linux run passed all
+12 checks, both authenticated routing cases passed all 12 checks, and the full
+repository verification remained green.
+
 ## Decision log
 
 | Decision | Why |
