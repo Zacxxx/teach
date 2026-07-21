@@ -15,6 +15,8 @@ for (const relative of [
   ".mcp.json",
   "assets/icon.svg",
   "assets/logo.svg",
+  "bin/teach-gpt-mcp",
+  "bin/teach-gpt-mcp-linux-x64.gz",
   "bin/teach-gpt-mcp.js",
   "skills/teach/SKILL.md",
   "skills/teach/agents/openai.yaml",
@@ -27,8 +29,12 @@ assert(skill.length < 20_000, "Teach skill should stay concise");
 
 const mcp = JSON.parse(await readFile(join(pluginRoot, ".mcp.json"), "utf8")) as { mcpServers?: Record<string, { command?: string; args?: string[] }> };
 const server = mcp.mcpServers?.["teach-gpt"];
-assert(server?.command === "bun", "MCP server must use the documented Bun runtime");
-assert(server.args?.[0] === "./bin/teach-gpt-mcp.js", "MCP server must use the bundled judge-ready entrypoint");
+assert(server?.command === "./bin/teach-gpt-mcp", "MCP server must use the self-contained Linux executable");
+assert(server.args?.length === 0, "MCP server must not require runtime package arguments");
+
+const mcpSource = await readFile(join(root, "packages", "mcp", "src", "index.ts"), "utf8");
+assert(mcpSource.includes("registerAppResource"), "MCP server must register the native embedded UI resource");
+assert(mcpSource.includes("teach_open"), "MCP server must expose the UI-first entry tool");
 
 console.log("Teach GPT repository validation passed.");
 

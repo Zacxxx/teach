@@ -1,8 +1,8 @@
 {
   "mcpServers": {
     "teach-gpt": {
-      "command": "bun",
-      "args": ["./bin/teach-gpt-mcp.js"],
+      "command": "./bin/teach-gpt-mcp",
+      "args": [],
       "cwd": "."
     }
   }
