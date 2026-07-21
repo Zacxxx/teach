@@ -167,3 +167,14 @@ under-three-minute directing and voiceover script.
 The browser had been given the horizontal wordmark for a square image slot.
 Teach now uses its edge-to-edge square mark for both the plugin browser and
 composer while retaining the horizontal asset for other brand placements.
+
+## Hackathon video motion feedback - 2026-07-22
+
+> Remove the black translucent corner bar and the unwanted top-right text,
+> tighten the pauses, stop cropping screenshots, and replace the still-image
+> montage with an actual video as required by the hackathon.
+
+This replaced the original screenshot-based assembly with a reproducible
+native recording of the live Teach component. The revised 2:02 timeline aligns
+each voice line with an actual UI state and keeps editorial copy off the product
+surface.

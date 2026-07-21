@@ -1,87 +1,87 @@
 1
-00:00:00,300 --> 00:00:04,526
+00:00:00,200 --> 00:00:04,426
 Some workflows are much easier to demonstrate than to describe.
 
 2
-00:00:04,526 --> 00:00:09,855
+00:00:04,426 --> 00:00:09,755
 Teach turns one visible demonstration into a reusable Codex skill.
 
 3
-00:00:10,300 --> 00:00:18,421
+00:00:10,200 --> 00:00:18,321
 It is an open-source Codex plugin built for OpenAI Build Week with Codex and GPT-5.6.
 
 4
-00:00:20,300 --> 00:00:21,986
+00:00:19,200 --> 00:00:20,886
 Naming is optional.
 
 5
-00:00:21,986 --> 00:00:26,578
+00:00:20,886 --> 00:00:25,478
 Teach can infer it later, but recording never starts from the first request.
 
 6
-00:00:33,300 --> 00:00:40,578
+00:00:26,200 --> 00:00:33,478
 A separate ready action creates a short-lived consent record and starts this computer's native recorder.
 
 7
-00:00:43,300 --> 00:00:45,250
+00:00:34,200 --> 00:00:36,150
 I perform the task normally.
 
 8
-00:00:45,250 --> 00:00:52,500
+00:00:36,150 --> 00:00:43,400
 Teach captures the screen and pointer locally, with no raw keystroke log and no hidden background monitoring.
 
 9
-00:01:05,300 --> 00:01:13,736
+00:00:44,200 --> 00:00:52,636
 Now the configured Codex model reads bounded frames, structures the goal and steps, and checks which actions Codex can actually replay.
 
 10
-00:01:13,736 --> 00:01:17,815
+00:00:52,636 --> 00:00:56,715
 The live status makes longer analysis visibly active.
 
 11
-00:01:18,300 --> 00:01:20,750
+00:00:57,200 --> 00:00:59,650
 This is more than record and replay.
 
 12
-00:01:20,750 --> 00:01:31,565
+00:00:59,650 --> 00:01:10,465
 Teach labelises the process: goal, software, duration, risks, output contract, ordered steps, and capability-based replayability.
 
 13
-00:01:42,300 --> 00:01:44,184
+00:01:11,200 --> 00:01:13,084
 The model only drafts.
 
 14
-00:01:44,184 --> 00:01:48,263
+00:01:13,084 --> 00:01:17,163
 I can review and edit what it learned before anything is published.
 
 15
-00:01:57,300 --> 00:02:06,947
+00:01:18,200 --> 00:01:27,847
 Optimization is optional, and it is strict: an alternative must target the exact same output, not a cheaper or lower-quality substitute.
 
 16
-00:02:12,300 --> 00:02:16,223
+00:01:28,200 --> 00:01:32,123
 Once approved, Teach publishes a normal portable skill.
 
 17
-00:02:16,223 --> 00:02:19,157
+00:01:32,123 --> 00:01:35,057
 I can call it directly from a new Codex task.
 
 18
-00:02:27,300 --> 00:02:38,921
+00:01:36,200 --> 00:01:47,821
 Teach is Apache-2.0, stores inspectable files instead of a hidden database, and packages native paths for Linux, macOS, and Windows 11.
 
 19
-00:02:41,300 --> 00:02:45,460
+00:01:48,200 --> 00:01:52,360
 OpenAI Record and Replay validates the interaction.
 
 20
-00:02:45,460 --> 00:02:51,921
+00:01:52,360 --> 00:01:58,821
 Teach makes the idea open, cross-platform, richly labeled, and user-reviewable.
 
 21
-00:02:51,921 --> 00:02:53,605
+00:01:58,821 --> 00:02:00,505
 Show Codex once.
 
 22
-00:02:53,605 --> 00:02:54,736
+00:02:00,505 --> 00:02:01,636
 Keep the skill.

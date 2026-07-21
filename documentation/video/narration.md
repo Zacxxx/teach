@@ -9,5 +9,6 @@
   service; no recording, repository file, or personal content is uploaded
 
 The exact spoken copy lives in `segments.json`, next to its scene start and
-duration. The master intentionally uses a synthetic workflow and labels
-deterministic product footage on screen.
+duration. The master intentionally uses a synthetic workflow. Its product
+footage is a native recording of the live deterministic component rather than
+an animated still-image montage.

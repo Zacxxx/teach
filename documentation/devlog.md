@@ -209,6 +209,25 @@ the edge-to-edge square Teach mark for both `logo` and `composerIcon`. Repositor
 validation locks that mapping while the horizontal SVG remains available for
 wide brand placements.
 
+## 2026-07-22 - Native-motion hackathon cut
+
+The first assembled demo used still captures with subtle zoom, a dark demo
+badge, and the original 2:55 scene timing. Review found four visible problems:
+the browser fullscreen notice looked like an unwanted translucent bar, the
+judge-demo badge competed with the UI, portrait-like captures were awkwardly
+framed, and narration gaps made the montage feel stalled.
+
+The replacement records the live deterministic Teach component at 30 fps with
+GNOME's native recorder. A kiosk-mode synthetic walkthrough performs the real
+UI actions: Skip, explicit Ready, recording timer, handoff writing, End
+recording, animated processing, review scrolling, name editing, equivalent
+optimization, and skill publishing. Capture start is synchronized through the
+local preview server, the temporary dual-display recording is cropped to the
+clean 1920×1080 demo display, and raw capture/profile data is deleted. The
+master is now 2:02, carries no editorial overlay over product footage, and
+retains static imagery only for title, public repository proof, and the end
+card.
+
 ## Decision log
 
 | Decision | Why |
@@ -227,3 +246,4 @@ wide brand placements.
 | Single `teach` identity | Keep invocation, repository, packages, UI, and marketplace naming predictable. |
 | Inherit Codex model by default | Avoid hard-coding a model slug that may not be enabled for the user's current authentication surface. |
 | Content-addressed runtime cache | Ensure every installed plugin archive executes its own bundled MCP runtime on every OS. |
+| Native-motion demo master | Demonstrate real timers, scrolling, editing, and publishing instead of animating screenshots. |

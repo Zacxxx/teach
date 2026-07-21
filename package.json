@@ -20,6 +20,7 @@
     "mcp": "bun run --cwd packages/mcp start",
     "test": "bun run --filter '*' test",
     "typecheck": "bun run --filter '*' typecheck",
-    "video": "bun run scripts/build-demo-video.ts"
+    "video": "bun run scripts/build-demo-video.ts",
+    "video:capture": "bun run scripts/capture-live-demo.ts"
   }
 }

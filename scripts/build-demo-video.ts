@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
 import { mkdir, readFile, rm, stat, writeFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { join, resolve } from "node:path";
 
 type Segment = {
   id: string;
@@ -9,7 +9,7 @@ type Segment = {
   duration: number;
   image: string;
   narration: string;
-  productDemo?: boolean;
+  sourceStart?: number;
 };
 
 const repo = resolve(import.meta.dir, "..");
@@ -24,8 +24,8 @@ const voice = "en-US-AndrewMultilingualNeural";
 const refreshVoice = process.argv.includes("--refresh-voice");
 const duration = segments.reduce((sum, segment) => sum + segment.duration, 0);
 
-if (duration !== 175) {
-  throw new Error(`Expected a 175-second cut, received ${duration} seconds.`);
+if (duration !== 122) {
+  throw new Error(`Expected a 122-second cut, received ${duration} seconds.`);
 }
 
 await mkdir(audioDir, { recursive: true });
@@ -226,7 +226,7 @@ async function probeDuration(path: string) {
 
 for (const segment of segments) {
   const audioDuration = await probeDuration(join(audioDir, `${segment.id}.mp3`));
-  if (audioDuration + 0.25 > segment.duration) {
+  if (audioDuration + 0.15 > segment.duration) {
     throw new Error(
       `${segment.id} narration (${audioDuration.toFixed(2)}s) exceeds its ` +
         `${segment.duration}s scene. Shorten the copy or extend the scene.`,
@@ -237,7 +237,7 @@ for (const segment of segments) {
 const cues: Cue[] = [];
 for (const segment of segments) {
   const vtt = await readFile(join(audioDir, `${segment.id}.vtt`), "utf8");
-  cues.push(...parseVtt(vtt, segment.start + 0.25));
+  cues.push(...parseVtt(vtt, segment.start + 0.15));
 }
 const srt = `${cues
   .map(
@@ -255,25 +255,24 @@ for (const segment of segments) {
   clips.push(clip);
   const image = join(videoDir, segment.image);
   const audio = join(audioDir, `${segment.id}.mp3`);
-  const fadeOut = Math.max(0, segment.duration - 0.35).toFixed(2);
-  const badge = segment.productDemo
-    ? ",drawbox=x=w-716:y=34:w=680:h=54:color=0x111114@0.84:t=fill,drawtext=fontfile=/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf:text='DETERMINISTIC JUDGE DEMO · ACTUAL TEACH COMPONENT':fontcolor=white:fontsize=20:x=w-tw-56:y=51"
-    : "";
+  const isVideo = image.endsWith(".mp4");
+  const inputArgs = isVideo
+    ? ["-ss", String(segment.sourceStart || 0), "-i", image]
+    : ["-loop", "1", "-framerate", "30", "-i", image];
+  const fades = segment.id === "01-title"
+    ? ",fade=t=in:st=0:d=0.35"
+    : segment.id === "12-end"
+      ? `,fade=t=out:st=${Math.max(0, segment.duration - 0.45).toFixed(2)}:d=0.45`
+      : "";
   const filter =
     `[0:v]scale=1920:1080:force_original_aspect_ratio=decrease,` +
     `pad=1920:1080:(ow-iw)/2:(oh-ih)/2:color=0x101011,` +
-    `zoompan=z='min(zoom+0.00008,1.018)':d=1:s=1920x1080:fps=30,` +
-    `fade=t=in:st=0:d=0.35,fade=t=out:st=${fadeOut}:d=0.35${badge}[v];` +
-    `[1:a]adelay=250|250,apad,atrim=0:${segment.duration},` +
+    `fps=30${fades}[v];` +
+    `[1:a]adelay=150|150,apad,atrim=0:${segment.duration},` +
     `loudnorm=I=-16:TP=-1.5:LRA=7[a]`;
   await run("ffmpeg", [
     "-y",
-    "-loop",
-    "1",
-    "-framerate",
-    "30",
-    "-i",
-    image,
+    ...inputArgs,
     "-i",
     audio,
     "-t",
@@ -330,7 +329,7 @@ const finalFilter =
   `PrimaryColour=&H00FFFFFF,OutlineColour=&HCC000000,BorderStyle=3,Outline=1,` +
   `Shadow=0,MarginV=42,Alignment=2'[v];` +
   `[1:a]lowpass=f=1200,volume=0.08,afade=t=in:st=0:d=3,` +
-  `afade=t=out:st=172:d=3[music];` +
+  `afade=t=out:st=${duration - 3}:d=3[music];` +
   `[0:a][music]amix=inputs=2:duration=first:dropout_transition=2[a]`;
 await run("ffmpeg", [
   "-y",
