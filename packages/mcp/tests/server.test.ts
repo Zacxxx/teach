@@ -130,6 +130,10 @@ test("MCP server exposes the complete teaching lifecycle", { timeout: 20_000 }, 
     assert.match(widgetText, />Skip</);
     assert.match(widgetText, /I’m ready — start recording/);
     assert.match(widgetText, /End recording/);
+    assert.match(widgetText, /Analysis is active/);
+    assert.match(widgetText, /processing-timer/);
+    assert.match(widgetText, /This can take a few minutes for longer recordings/);
+    assert.match(widgetText, /prefers-reduced-motion/);
     assert.match(widgetText, /brand-mark/);
     assert.match(widgetText, /host-context-changed/);
     assert.match(widgetText, /color-background-primary/);

@@ -85,7 +85,7 @@ const preview = `<!doctype html>
       }
       if (name === "teach_analyze") {
         session = { ...session, state: "review" };
-        return reply(message.id, { stage: "review", session, analysis });
+        return setTimeout(() => reply(message.id, { stage: "review", session, analysis }), 30000);
       }
       if (name === "teach_review") {
         Object.assign(analysis, { name: args.name, description: args.description, goal: args.goal, category: args.category });

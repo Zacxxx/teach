@@ -50,6 +50,14 @@ try {
       && widgetHtml.includes('request("tools/call", { name, arguments: cleanArgs })'),
     `native_call_tool=${widgetHtml.includes("window.openai.callTool(name, cleanArgs)")} portable_tools_call=${widgetHtml.includes('request("tools/call", { name, arguments: cleanArgs })')}`,
   ));
+  checks.push(check(
+    "visible_processing_heartbeat",
+    widgetHtml.includes("Analysis is active")
+      && widgetHtml.includes('id="processing-timer"')
+      && widgetHtml.includes("updateProcessingIndicator")
+      && widgetHtml.includes("prefers-reduced-motion"),
+    "animated activity, elapsed time, rotating status, and reduced-motion support",
+  ));
   checks.push(check("deterministic_recorder_only", openContent?.recorder?.backend === "demo", openContent?.recorder || "missing recorder"));
 
   const created = await client.callTool({ name: "teach_begin", arguments: {} });

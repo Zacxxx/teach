@@ -1,6 +1,6 @@
 {
   "name": "teach",
-  "version": "0.3.0+codex.20260721192309",
+  "version": "0.3.0+codex.20260721195107",
   "description": "Record a desktop workflow through native embedded controls on Linux, macOS, or Windows, analyze it with the user's configured Codex model, and publish a reusable skill.",
   "author": {
     "name": "Zacxxx Pinson-Tilche",

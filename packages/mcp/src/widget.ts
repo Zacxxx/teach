@@ -88,8 +88,24 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
     .step strong { font-size: 13px; }
     .step p { margin-top: 3px; font-size: 12px; }
     .pill { display: inline-flex; align-items: center; width: fit-content; padding: 5px 9px; border-radius: 999px; color: var(--violet-dark); background: rgba(109,94,248,.12); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
-    .busy { pointer-events: none; opacity: .66; }
+    .busy { pointer-events: none; }
+    .busy button { opacity: .55; }
+    .processing-panel { display: grid; gap: 18px; }
+    .processing-activity { display: grid; grid-template-columns: 58px 1fr; align-items: center; gap: 15px; padding: 15px; border: 1px solid var(--line); border-radius: 16px; background: var(--soft); }
+    .processing-orbit { position: relative; width: 54px; height: 54px; }
+    .processing-ring { position: absolute; inset: 0; border: 2px solid rgba(109,94,248,.16); border-top-color: var(--violet); border-radius: 999px; animation: orbit 1.35s linear infinite; }
+    .processing-core { position: absolute; inset: 14px; border-radius: 999px; background: var(--violet); box-shadow: 0 0 0 7px rgba(109,94,248,.12); animation: breathe 1.6s ease-in-out infinite; }
+    .processing-copy { min-width: 0; }
+    .processing-copy strong { display: block; font-size: 14px; }
+    .processing-copy span { display: block; min-height: 1.5em; margin-top: 3px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+    .processing-progress { position: relative; height: 5px; overflow: hidden; border-radius: 999px; background: rgba(109,94,248,.13); }
+    .processing-progress::after { content: ""; position: absolute; inset: 0 auto 0 -35%; width: 35%; border-radius: inherit; background: linear-gradient(90deg, transparent, var(--violet), transparent); animation: sweep 1.8s ease-in-out infinite; }
+    .processing-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; color: var(--muted); font-size: 12px; }
+    .processing-meta strong { color: var(--ink); font-variant-numeric: tabular-nums; }
     @keyframes pulse { 50% { transform: scale(.82); opacity: .62; } }
+    @keyframes orbit { to { transform: rotate(360deg); } }
+    @keyframes breathe { 50% { transform: scale(.72); opacity: .7; } }
+    @keyframes sweep { 50%, 100% { transform: translateX(390%); } }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   </style>
 </head>
@@ -114,6 +130,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
     let busy = false;
     let rpcId = 0;
     let hostContext = {};
+    let processingStartedAt = null;
     const pending = new Map();
 
     function escapeHtml(value) {
@@ -248,8 +265,13 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
     }
 
     function processingView() {
-      return '<div class="stack"><p class="eyebrow">Processing</p><h1>Turning the demonstration into a process…</h1>' +
-        '<p>Teach is extracting bounded frames and asking your configured Codex model for structured labels.</p></div>';
+      return '<div class="processing-panel" role="status" aria-live="polite" aria-busy="true">' +
+        '<div><p class="eyebrow">Processing</p><h1>Turning the demonstration into a process…</h1></div>' +
+        '<p>Teach is extracting bounded frames and asking your configured Codex model for structured labels.</p>' +
+        '<div class="processing-activity"><div class="processing-orbit" aria-hidden="true"><span class="processing-ring"></span><span class="processing-core"></span></div>' +
+        '<div class="processing-copy"><strong>Analysis is active</strong><span id="processing-status">Reading the recorded demonstration…</span></div></div>' +
+        '<div class="processing-progress" aria-hidden="true"></div>' +
+        '<div class="processing-meta"><span>This can take a few minutes for longer recordings.</span><span><strong id="processing-timer">00:00</strong> elapsed</span></div></div>';
     }
 
     function reviewView(analysis) {
@@ -292,6 +314,12 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
       app.innerHTML = (errorMessage ? '<div class="error" role="alert">' + escapeHtml(errorMessage) + '</div>' : '') + html;
       app.classList.toggle("busy", busy);
       if (state === "recording") updateTimer(session.recording?.started_at);
+      if (state === "processing") {
+        if (processingStartedAt === null) processingStartedAt = Date.now();
+        updateProcessingIndicator();
+      } else {
+        processingStartedAt = null;
+      }
     }
 
     function updateTimer(startedAt) {
@@ -300,7 +328,27 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
       const seconds = Math.max(0, Math.floor((Date.now() - Date.parse(startedAt)) / 1000));
       timer.textContent = String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0");
     }
-    setInterval(() => data?.session?.state === "recording" && updateTimer(data.session.recording?.started_at), 1000);
+
+    function updateProcessingIndicator() {
+      if (processingStartedAt === null) return;
+      const seconds = Math.max(0, Math.floor((Date.now() - processingStartedAt) / 1000));
+      const timer = document.querySelector("#processing-timer");
+      const status = document.querySelector("#processing-status");
+      const messages = [
+        "Reading the recorded demonstration…",
+        "Identifying repeatable actions…",
+        "Structuring goals and steps…",
+        "Checking what Codex can replay…",
+        "Preparing labels for your review…"
+      ];
+      if (timer) timer.textContent = String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0");
+      if (status) status.textContent = messages[Math.floor(seconds / 6) % messages.length];
+    }
+
+    setInterval(() => {
+      if (data?.session?.state === "recording") updateTimer(data.session.recording?.started_at);
+      if (data?.session?.state === "processing") updateProcessingIndicator();
+    }, 1000);
 
     async function run(action) {
       const formValues = {
