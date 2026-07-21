@@ -213,8 +213,9 @@ async function generateDemoRecording(path: string): Promise<void> {
   await mkdir(join(path, ".."), { recursive: true, mode: 0o700 });
   const result = spawnSync("ffmpeg", [
     "-loglevel", "error", "-y",
-    "-f", "lavfi", "-i", "testsrc2=size=1280x720:rate=10",
-    "-t", "3", "-c:v", "libvpx-vp9", "-pix_fmt", "yuv420p", path,
+    "-f", "lavfi", "-i", "testsrc2=size=960x540:rate=10",
+    "-t", "1", "-c:v", "libvpx-vp9", "-deadline", "realtime", "-cpu-used", "8",
+    "-pix_fmt", "yuv420p", path,
   ], { encoding: "utf8" });
   if (result.status !== 0) throw new Error(`demo_recording_failed:${sanitize(result.stderr)}`);
 }
@@ -248,7 +249,15 @@ function extractFrames(recording: string, directory: string): { directory: strin
     "-vf", "fps=1/3,scale='min(1280,iw)':-2", "-q:v", "3", join(directory, "frame-%04d.jpg"),
   ], { encoding: "utf8" });
   if (result.status !== 0) throw new Error(`frame_extraction_failed:${sanitize(result.stderr)}`);
-  const count = readdirSync(directory).filter((name) => /^frame-\d+\.jpg$/.test(name)).length;
+  let count = readdirSync(directory).filter((name) => /^frame-\d+\.jpg$/.test(name)).length;
+  if (count === 0) {
+    const firstFrame = spawnSync("ffmpeg", [
+      "-loglevel", "error", "-y", "-i", recording,
+      "-frames:v", "1", "-q:v", "3", join(directory, "frame-0001.jpg"),
+    ], { encoding: "utf8" });
+    if (firstFrame.status !== 0) throw new Error(`frame_extraction_failed:${sanitize(firstFrame.stderr)}`);
+    count = 1;
+  }
   return { directory, count };
 }
 

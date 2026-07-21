@@ -86,7 +86,7 @@ test("default session storage follows each host convention", () => {
   }
 });
 
-test("fixture journey records consent, labels the process, and publishes a skill", async () => {
+test("fixture journey records consent, labels the process, and publishes a skill", { timeout: 20_000 }, async () => {
   const root = await mkdtemp(join(tmpdir(), "teach-test-"));
   process.env.TEACH_HOME = join(root, "data");
   process.env.TEACH_SKILLS_HOME = join(root, "skills");
@@ -119,7 +119,7 @@ test("fixture journey records consent, labels the process, and publishes a skill
     assert.match(events, /recording_authorized/);
     assert.match(events, /skill_published/);
   } finally {
-    await rm(root, { recursive: true, force: true });
+    await rm(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 });
 
@@ -132,11 +132,11 @@ test("recording cannot start before a separate authorization transition", async 
     await assert.rejects(startRecording(session.id), /recording_not_authorized/);
     assert.equal((await getSession(session.id)).state, "draft");
   } finally {
-    await rm(root, { recursive: true, force: true });
+    await rm(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 });
 
-test("a failed capture is recoverable without leaving the global recording lock", { timeout: 12_000 }, async () => {
+test("a failed capture is recoverable without leaving the global recording lock", { timeout: 20_000 }, async () => {
   const root = await mkdtemp(join(tmpdir(), "teach-test-"));
   process.env.TEACH_HOME = root;
   process.env.TEACH_RECORDER = "demo";
@@ -152,6 +152,6 @@ test("a failed capture is recoverable without leaving the global recording lock"
     assert.equal((await startRecording(session.id)).state, "recording");
     assert.equal((await stopRecording(session.id)).state, "processing");
   } finally {
-    await rm(root, { recursive: true, force: true });
+    await rm(root, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 });

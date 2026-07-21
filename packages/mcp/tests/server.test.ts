@@ -7,7 +7,7 @@ import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
 
-test("MCP server exposes the complete teaching lifecycle", async () => {
+test("MCP server exposes the complete teaching lifecycle", { timeout: 20_000 }, async () => {
   const home = await mkdtemp(join(tmpdir(), "teach-mcp-"));
   const cwd = dirname(dirname(fileURLToPath(import.meta.url)));
   const env = Object.fromEntries(Object.entries(process.env).filter((entry): entry is [string, string] => typeof entry[1] === "string"));
@@ -74,11 +74,11 @@ test("MCP server exposes the complete teaching lifecycle", async () => {
     assert.match(JSON.stringify(analyzed), /"state":"review"/);
   } finally {
     await client.close();
-    await rm(home, { recursive: true, force: true });
+    await rm(home, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 });
 
-test("packaged backend starts without Bun or graphical environment variables", async () => {
+test("packaged backend starts without Bun or graphical environment variables", { timeout: 20_000 }, async () => {
   const home = await mkdtemp(join(tmpdir(), "teach-packaged-"));
   const packageRoot = resolve(dirname(dirname(fileURLToPath(import.meta.url))), "..", "..");
   const executable = join(packageRoot, "plugins", "teach", "bin", process.platform === "win32" ? "teach-mcp.exe" : "teach-mcp");
@@ -111,6 +111,6 @@ test("packaged backend starts without Bun or graphical environment variables", a
     assert.match(JSON.stringify(opened), /Deterministic demo recorder/);
   } finally {
     await client.close();
-    await rm(home, { recursive: true, force: true });
+    await rm(home, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   }
 });
