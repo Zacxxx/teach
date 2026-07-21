@@ -10,8 +10,8 @@ const preview = `<!doctype html>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Teach widget preview</title>
   <style>
-    body { margin: 0; background: #eee9e1; font-family: system-ui, sans-serif; }
-    iframe { display: block; width: min(820px, calc(100% - 32px)); height: 820px; margin: 24px auto; border: 0; }
+    body { margin: 0; background: #eee9e1; font-family: system-ui, sans-serif; transition: background .2s ease; }
+    iframe { display: block; width: min(920px, calc(100% - 32px)); height: 820px; margin: 16px auto; border: 0; }
   </style>
 </head>
 <body>
@@ -23,6 +23,7 @@ const preview = `<!doctype html>
     const theme = requestedTheme === "light" || requestedTheme === "dark"
       ? requestedTheme
       : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    document.body.style.background = theme === "dark" ? "#101011" : "#eee9e1";
     const variables = theme === "dark" ? {
       "--color-background-primary": "#171717",
       "--color-background-secondary": "#212121",
@@ -85,7 +86,7 @@ const preview = `<!doctype html>
       }
       if (name === "teach_analyze") {
         session = { ...session, state: "review" };
-        return setTimeout(() => reply(message.id, { stage: "review", session, analysis }), 30000);
+        return setTimeout(() => reply(message.id, { stage: "review", session, analysis }), 15000);
       }
       if (name === "teach_review") {
         Object.assign(analysis, { name: args.name, description: args.description, goal: args.goal, category: args.category });
@@ -96,7 +97,8 @@ const preview = `<!doctype html>
         return reply(message.id, { stage: "review", session, analysis });
       }
       if (name === "teach_publish") {
-        session = { ...session, state: "published", published_skill: { name: "prepare-weekly-handoff" } };
+        const skillName = analysis.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+        session = { ...session, state: "published", published_skill: { name: skillName } };
         return reply(message.id, { stage: "published", session });
       }
       reply(message.id, { stage: "setup", recorder });
