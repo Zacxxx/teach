@@ -28,7 +28,7 @@ for (const relative of [
 ]) await access(join(pluginRoot, relative));
 
 const skill = await readFile(join(pluginRoot, "skills", "teach", "SKILL.md"), "utf8");
-assert(/^---\nname: teach\ndescription: [^\n]+\n---\n/.test(skill), "Teach skill frontmatter is invalid");
+assert(/^---\r?\nname: teach\r?\ndescription: [^\r\n]+\r?\n---\r?\n/.test(skill), "Teach skill frontmatter is invalid");
 assert(!skill.includes("[TODO"), "Teach skill contains a placeholder");
 assert(skill.length < 20_000, "Teach skill should stay concise");
 
