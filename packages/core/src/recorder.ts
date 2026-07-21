@@ -246,14 +246,14 @@ function extractFrames(recording: string, directory: string): { directory: strin
   mkdirSync(directory, { recursive: true, mode: 0o700 });
   const result = spawnSync("ffmpeg", [
     "-loglevel", "error", "-y", "-i", recording,
-    "-vf", "fps=1/3,scale='min(1280,iw)':-2", "-q:v", "3", join(directory, "frame-%04d.jpg"),
+    "-vf", "fps=1/3,scale='min(1280,iw)':-2", join(directory, "frame-%04d.png"),
   ], { encoding: "utf8" });
   if (result.status !== 0) throw new Error(`frame_extraction_failed:${sanitize(result.stderr)}`);
-  let count = readdirSync(directory).filter((name) => /^frame-\d+\.jpg$/.test(name)).length;
+  let count = readdirSync(directory).filter((name) => /^frame-\d+\.png$/.test(name)).length;
   if (count === 0) {
     const firstFrame = spawnSync("ffmpeg", [
       "-loglevel", "error", "-y", "-i", recording,
-      "-frames:v", "1", "-q:v", "3", join(directory, "frame-0001.jpg"),
+      "-frames:v", "1", join(directory, "frame-0001.png"),
     ], { encoding: "utf8" });
     if (firstFrame.status !== 0) throw new Error(`frame_extraction_failed:${sanitize(firstFrame.stderr)}`);
     count = 1;

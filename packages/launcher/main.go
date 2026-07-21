@@ -11,7 +11,7 @@ import (
 	"runtime"
 )
 
-const runtimeVersion = "0.3.0-r3"
+const runtimeVersion = "0.3.0-r4"
 
 func main() {
 	if err := run(); err != nil {
