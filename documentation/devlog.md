@@ -93,19 +93,36 @@ store sessions under `~/.local/share/teach`; the core still recognizes the
 legacy environment variables and existing `~/.local/share/teach-gpt` workspace
 so the rename does not strand recordings or taught processes.
 
+## 2026-07-21 - Cross-platform desktop release
+
+The Linux-only package and recorder boundary was replaced with an explicit
+desktop matrix. Bun cross-compilation now produces standalone MCP runtimes for
+Linux x64/arm64, macOS Intel/Apple silicon, and Windows x64. POSIX hosts select
+their compressed runtime through one launcher; Windows resolves the same MCP
+command to a small native `.exe` launcher and expands its runtime into the user
+cache. Installed users still do not need Bun or npm.
+
+Recorder routing now chooses GNOME's persistent D-Bus sender on Linux, Apple's
+screen-capture utility on macOS, and FFmpeg `gdigrab` on Windows 11. Shared
+post-processing no longer shells out to Unix `mkdir` or `find`. Platform probes
+check FFmpeg/ffprobe and the native capture dependency before consent can start
+a recording. GitHub Actions runs the packaged deterministic lifecycle on all
+three operating systems, while a separate physical-host checklist covers the
+permission prompts and pixels that headless CI cannot honestly validate.
+
 ## Decision log
 
 | Decision | Why |
 | --- | --- |
 | Clean public history | Do not publish Corridor's proprietary history accidentally. |
 | Apache-2.0 | Clear open-source permissions and patent grant. |
-| GNOME Wayland first | It is the current host and exposes a native Screencast D-Bus API. |
+| OS-specific capture adapters | Keep one governed lifecycle while using GNOME D-Bus, Apple screen capture, and Windows GDI capture. |
 | No raw keystroke log | Protect secrets while video and semantic frames teach the workflow. |
 | Codex exec analyzer | Uses the installed Codex surface and GPT-5.6 without requiring API credits. |
 | Fixture demo | Lets judges test the full lifecycle without recording or rebuilding. |
 | Capability-based replay label | Prevent a model from claiming it can redo unavailable actions. |
 | Embedded MCP Apps component | Make the full lifecycle usable inside Codex with native controls. |
-| Bundled compressed runtime | Make plugin installation sufficient for judges and users on supported Linux. |
+| Bundled compressed runtimes | Make plugin installation sufficient on Linux, macOS, and Windows without a JavaScript runtime install. |
 | Persistent GNOME D-Bus sender | GNOME binds capture lifetime to the caller; the sender must survive until explicit stop. |
 | Standard MCP Apps `tools/call` | Keep the component portable across Codex and ChatGPT hosts. |
 | Single `teach` identity | Keep invocation, repository, packages, UI, and marketplace naming predictable. |

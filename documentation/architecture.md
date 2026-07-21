@@ -9,7 +9,7 @@ flowchart LR
     C --> M["Teach MCP server"]
     W --> M
     M --> K
-    K --> R["GNOME recorder adapter"]
+    K --> R["Platform recorder adapters"]
     K --> F["File workspace"]
     K --> X["codex exec / GPT-5.6"]
     K --> S["Generated Codex skill"]
@@ -20,9 +20,11 @@ flowchart LR
 ### `plugins/teach`
 
 Installable Codex bundle containing the `$teach` orchestration skill, MCP Apps
-component, MCP configuration, self-extracting Linux x86_64 runtime, manifest,
-and product assets. It does not hold user recordings. First use expands the
-versioned runtime into the user's cache with private permissions.
+component, MCP configuration, platform runtimes, manifest, and product assets.
+It does not hold user recordings. POSIX hosts select a compressed runtime by
+`uname`; Windows resolves the same extensionless MCP command to a small
+`teach-mcp.exe` launcher. First use expands the matching versioned runtime into
+the user's cache with private permissions.
 
 ### `packages/core`
 
@@ -44,8 +46,10 @@ package. It is not required by the installed plugin or a hosted multi-user servi
 
 ## File workspace
 
-`TEACH_HOME` defaults to `$XDG_DATA_HOME/teach` or
-`~/.local/share/teach`. Directories use mode `0700`; sensitive artifacts use
+`TEACH_HOME` defaults to `$XDG_DATA_HOME/teach` or `~/.local/share/teach` on
+Linux, `~/Library/Application Support/Teach` on macOS, and
+`%LOCALAPPDATA%\Teach` on Windows. Directories use private host permissions;
+sensitive artifacts use
 `0600`. JSON is written to a same-directory temporary file, synced, and renamed.
 The event log stores lifecycle metadata only and never raw screen or text data.
 Existing `TEACH_GPT_HOME` configuration and `~/.local/share/teach-gpt` data are
@@ -72,7 +76,8 @@ idempotency key in the event log.
 
 ## Recording
 
-The GNOME adapter discovers the current user's D-Bus socket from the operating
+All adapters implement the same start, arm, stop, abort, and finalized-path
+contract. The GNOME adapter discovers the current user's D-Bus socket from the operating
 system rather than relying on graphical environment variables inherited by the
 sandboxed plugin process. A small GNOME-native helper owns one persistent D-Bus
 sender while it calls `org.gnome.Shell.Screencast`, holds capture open, and
@@ -82,8 +87,17 @@ validates the finalized video with `ffprobe`, and only then asks `ffmpeg` to
 sample bounded frames. The adapter does not register a keyboard event listener.
 A demo adapter creates a synthetic clip for tests and judging.
 
-Future adapters implement the same start/stop contract for KDE/Portal, wlroots,
-and macOS without changing analysis or storage.
+On macOS, Teach invokes Apple's `screencapture` video mode and stops it with an
+interrupt so the MOV is finalized before validation. macOS owns the Screen &
+System Audio Recording permission and privacy indicator. On Windows 11, Teach
+uses FFmpeg's `gdigrab` desktop source with pointer drawing and sends FFmpeg its
+normal `q` command to finalize an MKV cleanly. The embedded panel provides the
+explicit visible recording state on every OS. KDE/Portal and wlroots remain
+future adapters.
+
+Frame-directory creation and enumeration use runtime filesystem APIs rather
+than Unix `mkdir` or `find`, so post-processing follows the same code path on
+Windows. Every adapter requires `ffprobe` validation before frame extraction.
 
 ## Analysis and deterministic validation
 

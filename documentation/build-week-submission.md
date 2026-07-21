@@ -7,18 +7,18 @@ Live Devpost data was checked on 2026-07-21. Submissions close at
 
 - Category: **Work & Productivity** (primary) or Developer Tools.
 - Problem: workflows that are easier to demonstrate than describe remain hard
-  to turn into portable, reviewable agent instructions on Linux.
-- Differentiation: open source, Linux first, rich labelisation, capability-honest
+  to turn into portable, reviewable agent instructions across desktop operating systems.
+- Differentiation: open source, cross-platform with strong Linux support, rich labelisation, capability-honest
   replayability, review UX, exact-output optimization, and inspectable storage.
 
 ## Judging alignment
 
 | Criterion | Evidence |
 | --- | --- |
-| Technological Implementation | Native GNOME capture, MCP lifecycle, GPT-5.6 structured analysis, skill compiler, tests. |
+| Technological Implementation | Linux/macOS/Windows capture adapters, packaged MCP runtimes, GPT-5.6 structured analysis, skill compiler, and three-OS CI. |
 | Design | Embedded Codex setup, consent, recording, review, and publish controls via MCP Apps. |
 | Potential Impact | Lets non-developers author repeatable Codex workflows by demonstration. |
-| Quality of Idea | Open Linux implementation goes beyond recording into governed process labelisation and verified alternatives. |
+| Quality of Idea | Open cross-platform implementation goes beyond recording into governed process labelisation and verified alternatives. |
 
 ## Required assets
 
@@ -37,11 +37,11 @@ Live Devpost data was checked on 2026-07-21. Submissions close at
 
 1. **0:00-0:20 - Problem:** describing a UI workflow is tedious and ambiguous.
 2. **0:20-0:45 - Consent:** invoke `$teach`, show the embedded panel, skip or enter metadata, approve recording.
-3. **0:45-1:25 - Demonstration:** perform a short Linux workflow and stop it.
+3. **0:45-1:25 - Demonstration:** perform a short workflow and stop it; show the cross-platform support matrix briefly.
 4. **1:25-2:00 - GPT-5.6:** show generated labels, steps, software, duration, and replayability.
 5. **2:00-2:30 - Review:** edit a step and request an output-equivalent alternative.
 6. **2:30-2:50 - Publish:** create the skill and invoke it from a new Codex task.
-7. **2:50-3:00 - Differentiation:** open source, Linux, local files, honest capability labels.
+7. **2:50-3:00 - Differentiation:** open source, Linux/macOS/Windows, local files, honest capability labels.
 
 ## Devpost plugin handoff
 

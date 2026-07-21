@@ -63,6 +63,15 @@ This renamed the public plugin, marketplace, embedded product UI, package
 scope, runtime, and GitHub repository to `teach` while retaining compatibility
 with legacy Teach GPT environment variables and existing local session data.
 
+## Cross-platform prompt - 2026-07-21
+
+> Let's now make sure that the Teach plugin works across all OS: Windows 11 and
+> macOS as well as our current Linux, and update the related docs.
+
+This led to platform-native recorder routing, five packaged runtime targets, a
+Windows native launcher, removal of Unix-only post-processing commands, a
+Linux/Windows/macOS CI matrix, and an explicit physical-host release checklist.
+
 ## Runtime recording-analysis prompt
 
 The analyzer receives this template together with `session.json`, sampled

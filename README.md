@@ -1,6 +1,6 @@
 # Teach
 
-Teach is an open-source, Linux-first Codex plugin that learns a reusable
+Teach is an open-source, cross-platform Codex plugin that learns a reusable
 skill from a workflow you demonstrate. You describe the goal or skip naming,
 approve a visible recording in Codex, perform the task, stop naturally or from
 the embedded control surface, review a structured process draft, and publish it as a normal
@@ -16,7 +16,7 @@ initially available in the EEA, United Kingdom, or Switzerland. Teach is a
 separate implementation with a different product boundary:
 
 - **Open source:** Apache-2.0 code, inspectable storage, and portable skill output.
-- **Linux first:** native GNOME Wayland recording today, with explicit recorder adapters.
+- **Cross-platform:** consent-bound recording on GNOME Wayland, macOS, and Windows 11.
 - **Deep labelisation:** goal, steps, software, duration, inputs, outputs, risks,
   variability, replayability, blockers, and verification criteria.
 - **Reviewable by design:** recording consent, local artifacts, editable drafts,
@@ -30,13 +30,14 @@ Teach is not affiliated with or a replacement for OpenAI Record & Replay.
 ## Architecture in one minute
 
 The Codex plugin bundles a `$teach` skill, an MCP Apps interface, and a local
-MCP server. The Linux plugin also bundles a self-extracting x86_64 backend, so
-installing the plugin does not require Bun or an npm package install. The server
+MCP server. It includes standalone backends for Linux x64/arm64, macOS
+Intel/Apple silicon, and Windows 11 x64, so installing the plugin does not
+require Bun or an npm package install. The server
 uses `@teach/core`, a self-hostable package that stores each session as a
 plain directory:
 
 ```text
-~/.local/share/teach/sessions/<session-id>/
+<platform data directory>/teach/sessions/<session-id>/
   session.json
   events.jsonl
   recording.webm
@@ -52,17 +53,19 @@ the no-credentials judge demo.
 
 ## Requirements
 
-- Linux x86_64; GNOME Wayland is the supported native recording target for v0.2.
+- Linux with GNOME Wayland, macOS, or Windows 11 x64. See the exact
+  [platform matrix](documentation/platform-support.md).
 - Codex Desktop or Codex CLI for plugin usage and GPT-5.6 analysis.
-- `ffmpeg` for keyframe extraction.
-- GNOME Shell Screencast D-Bus support, `gdbus` for probing, and `gjs` for the
-  persistent native recording sender.
+- `ffmpeg` and `ffprobe` on `PATH` for recording validation and keyframe extraction.
+- Linux additionally needs GNOME Shell Screencast D-Bus support, `gdbus`, and `gjs`.
+- macOS asks for Screen & System Audio Recording permission on first capture.
+- Windows FFmpeg must expose the `gdigrab` input device.
 
 Bun 1.3.3 or newer is required only for source development and the deterministic
 repository demo, not for an installed plugin.
 
 Other Linux desktops can use `TEACH_RECORDER=demo` today or add a recorder
-adapter without changing the session format.
+adapter without changing the cross-platform session format.
 
 ## Run without rebuilding
 
@@ -119,7 +122,10 @@ make demo
 ```
 
 The plugin manifest, Teach skill, TypeScript, tests, production web build, and
-deterministic end-to-end path are all checked.
+deterministic end-to-end path are all checked. GitHub Actions repeats the
+packaged MCP lifecycle on Linux, Windows, and macOS and validates every bundled
+executable format. Native desktop capture still has a physical-host release
+checklist because headless CI cannot prove OS permission prompts or real pixels.
 
 ## How Codex and GPT-5.6 were used
 
@@ -141,6 +147,7 @@ publishing paths. Model output cannot silently publish or execute a workflow.
 - [Prompt library](documentation/prompt-library.md)
 - [Design](documentation/design.md)
 - [Architecture](documentation/architecture.md)
+- [Platform support and release checklist](documentation/platform-support.md)
 - [Build Week submission checklist](documentation/build-week-submission.md)
 
 ## License

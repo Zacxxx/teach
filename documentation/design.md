@@ -52,10 +52,10 @@ are displayed separately and never replace the reviewed process.
 OpenAI Record & Replay is the closest product reference and validates the core
 interaction. Teach differentiates through:
 
-| Dimension | Teach v0.2 |
+| Dimension | Teach v0.3 |
 | --- | --- |
 | Source | Apache-2.0, self-hostable |
-| Platform | Linux/GNOME Wayland first |
+| Platform | Linux/GNOME Wayland, macOS, and Windows 11 |
 | Region | No product-level EEA exclusion; local laws and policies still apply |
 | Storage | Inspectable local files |
 | Labels | Rich process, risk, capability, and output-contract schema |
