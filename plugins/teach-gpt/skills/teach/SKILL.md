@@ -6,18 +6,24 @@ description: Record and learn a user-demonstrated workflow, analyze and label it
 # Teach a workflow
 
 Use the `teach_*` MCP tools for every state change. Keep the conversation short
-and make consent unmistakable.
+and make consent unmistakable. The embedded MCP Apps component is the primary
+interaction surface; conversational questions are a fallback only when the host
+cannot render it.
 
 ## Start
 
-1. Ask whether the user wants to provide a name and description. Make skipping explicit.
-   If they skip both, proceed directly to `teach_begin` without a second metadata prompt.
-2. Call `teach_begin` with any supplied metadata.
-3. State the capture scope before asking whether the user is ready: the selected
-   screen and cursor are recorded to the local session; microphone, clipboard,
-   and raw keystroke logging are off. Mention any platform-specific deviation
-   reported by the tool instead of assuming it silently.
-4. Only after an explicit yes, call `teach_start`.
+1. Call `teach_open` immediately when teaching is requested. Do not ask the
+   metadata question in prose before this tool call.
+2. Let the embedded component collect or skip the optional name and description
+   and call `teach_begin` itself.
+3. Let the component display recorder availability and the exact capture scope.
+4. Only call `teach_start` after the component's explicit Ready click or a
+   separate natural-language ready response.
+
+If the host does not render the component, use the same sequence conversationally:
+ask once for optional metadata, call `teach_begin`, state that only the selected
+screen and cursor are recorded while microphone, clipboard, and raw keystroke
+logging stay off, then ask for a separate ready response.
 
 Never infer readiness from the initial request. The separate ready response is
 the authorization boundary.
@@ -25,7 +31,7 @@ the authorization boundary.
 ## Record
 
 Tell the user that recording is active and that they can say “done,” “stop
-recording,” or use the local dashboard. Do not interrupt their demonstration
+recording,” or use the embedded End recording button. Do not interrupt their demonstration
 with questions.
 
 When they finish, call `teach_stop`, then `teach_analyze`. If analysis fails,

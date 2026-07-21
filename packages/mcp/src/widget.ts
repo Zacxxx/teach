@@ -1,0 +1,307 @@
+export const TEACH_WIDGET_URI = "ui://teach-gpt/workflow-v2.html";
+
+export const TEACH_WIDGET_HTML = `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Teach GPT</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --ink: var(--color-text-primary, #211f26);
+      --muted: var(--color-text-secondary, #6d6874);
+      --surface: var(--color-background-primary, #fffdf8);
+      --soft: var(--color-background-secondary, #f5f0ff);
+      --line: var(--color-border-secondary, rgba(45, 35, 60, .14));
+      --violet: #6d5ef8;
+      --violet-dark: #5545df;
+      --coral: #ff705b;
+      --green: #157f5b;
+      --red: #c43d43;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 12px; color: var(--ink); background: transparent; }
+    button, input, textarea { font: inherit; }
+    .shell {
+      overflow: hidden;
+      max-width: 760px;
+      margin: 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: 0 16px 42px rgba(32, 23, 47, .08);
+    }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 760; letter-spacing: -.02em; }
+    .mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: white; background: linear-gradient(145deg, var(--violet), #8a72ff); box-shadow: inset 0 -1px 0 rgba(0,0,0,.16); }
+    .privacy { color: var(--muted); font-size: 12px; }
+    main { display: grid; gap: 18px; padding: 22px; }
+    .eyebrow { margin: 0 0 7px; color: var(--violet); font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    h1 { margin: 0; font-family: ui-serif, Georgia, serif; font-size: clamp(25px, 5vw, 38px); font-weight: 520; line-height: 1.08; letter-spacing: -.035em; }
+    h2 { margin: 0; font-size: 17px; letter-spacing: -.015em; }
+    p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .stack { display: grid; gap: 13px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+    .card { padding: 14px; border: 1px solid var(--line); border-radius: 15px; background: var(--soft); }
+    .card strong { display: block; margin-bottom: 4px; font-size: 13px; }
+    .card span { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    label { display: grid; gap: 6px; font-size: 12px; font-weight: 720; }
+    input, textarea { width: 100%; padding: 11px 12px; color: var(--ink); border: 1px solid var(--line); border-radius: 11px; background: var(--surface); outline: none; }
+    textarea { min-height: 74px; resize: vertical; }
+    input:focus, textarea:focus { border-color: var(--violet); box-shadow: 0 0 0 3px rgba(109,94,248,.14); }
+    .actions { display: flex; flex-wrap: wrap; gap: 9px; }
+    button { min-height: 42px; padding: 10px 15px; border: 0; border-radius: 12px; cursor: pointer; font-weight: 750; transition: transform .14s ease, opacity .14s ease, background .14s ease; }
+    button:hover { transform: translateY(-1px); }
+    button:focus-visible { outline: 3px solid rgba(109,94,248,.28); outline-offset: 2px; }
+    button:disabled { cursor: not-allowed; opacity: .55; transform: none; }
+    .primary { color: white; background: var(--violet); }
+    .primary:hover { background: var(--violet-dark); }
+    .secondary { color: var(--ink); border: 1px solid var(--line); background: transparent; }
+    .danger { color: white; background: var(--red); }
+    .status { display: flex; align-items: flex-start; gap: 10px; padding: 12px 13px; border: 1px solid var(--line); border-radius: 13px; background: var(--soft); }
+    .dot { flex: 0 0 auto; width: 9px; height: 9px; margin-top: 5px; border-radius: 999px; background: var(--green); box-shadow: 0 0 0 4px rgba(21,127,91,.12); }
+    .dot.recording { background: var(--red); box-shadow: 0 0 0 4px rgba(196,61,67,.12); animation: pulse 1.4s infinite; }
+    .status strong { display: block; font-size: 13px; }
+    .status small { display: block; margin-top: 2px; color: var(--muted); line-height: 1.4; }
+    .error { padding: 12px 13px; border: 1px solid rgba(196,61,67,.28); border-radius: 12px; color: var(--red); background: rgba(196,61,67,.08); font-size: 13px; line-height: 1.45; }
+    .recording-panel { padding: 22px; border-radius: 18px; color: white; background: linear-gradient(135deg, #2b2232, #4a2c46); }
+    .recording-panel p { color: rgba(255,255,255,.72); }
+    .timer { margin: 9px 0 17px; font-variant-numeric: tabular-nums; font-size: 42px; font-weight: 760; letter-spacing: -.04em; }
+    .steps { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .step { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 11px; border: 1px solid var(--line); border-radius: 12px; }
+    .step-index { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; color: var(--violet); background: rgba(109,94,248,.12); font-weight: 800; font-size: 12px; }
+    .step strong { font-size: 13px; }
+    .step p { margin-top: 3px; font-size: 12px; }
+    .pill { display: inline-flex; align-items: center; width: fit-content; padding: 5px 9px; border-radius: 999px; color: var(--violet-dark); background: rgba(109,94,248,.12); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
+    .busy { pointer-events: none; opacity: .66; }
+    footer { padding: 12px 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    @keyframes pulse { 50% { transform: scale(.82); opacity: .62; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <section class="shell" aria-label="Teach GPT workflow controls">
+    <header>
+      <div class="brand"><span class="mark">T</span><span>Teach GPT</span></div>
+      <span class="privacy">Visible capture · local artifacts</span>
+    </header>
+    <main id="app" aria-live="polite"></main>
+    <footer>Microphone, clipboard, and raw keystroke logging remain off.</footer>
+  </section>
+  <script type="module">
+    const app = document.querySelector("#app");
+    let data = window.openai?.toolOutput ?? { stage: "setup" };
+    let errorMessage = "";
+    let busy = false;
+    let rpcId = 0;
+    const pending = new Map();
+
+    function escapeHtml(value) {
+      return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+      })[character]);
+    }
+
+    function request(method, params) {
+      return new Promise((resolve, reject) => {
+        const id = ++rpcId;
+        const timeout = setTimeout(() => {
+          pending.delete(id);
+          reject(new Error("Codex did not answer the UI action in time."));
+        }, 30000);
+        pending.set(id, { resolve, reject, timeout });
+        window.parent.postMessage({ jsonrpc: "2.0", id, method, params }, "*");
+      });
+    }
+
+    function notify(method, params) {
+      window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
+    }
+
+    async function initialize() {
+      await request("ui/initialize", {
+        appInfo: { name: "teach-gpt-widget", version: "0.2.0" },
+        appCapabilities: {},
+        protocolVersion: "2026-01-26"
+      });
+      notify("ui/notifications/initialized", {});
+    }
+
+    const bridgeReady = initialize().catch(() => null);
+
+    async function callTool(name, args) {
+      await bridgeReady;
+      if (window.openai?.callTool) return window.openai.callTool(name, args);
+      return request("tools/call", { name, arguments: args });
+    }
+
+    function unwrap(response) {
+      return response?.structuredContent ?? response?.result?.structuredContent ?? response ?? data;
+    }
+
+    function recorderStatus() {
+      const recorder = data?.recorder;
+      if (!recorder) return "";
+      return '<div class="status"><span class="dot"></span><div><strong>' +
+        escapeHtml(recorder.label) + '</strong><small>' + escapeHtml(recorder.detail) + '</small></div></div>';
+    }
+
+    function setupView() {
+      return '<div class="stack">' +
+        '<div><p class="eyebrow">New teaching</p><h1>What will you show Codex?</h1></div>' +
+        '<p>Name and description are optional. You can skip them and let GPT-5.6 propose both after the recording.</p>' +
+        recorderStatus() +
+        '<label>Name <input id="name" maxlength="80" placeholder="e.g. Prepare the weekly handoff" /></label>' +
+        '<label>Description <textarea id="description" maxlength="500" placeholder="What output should remain the same?"></textarea></label>' +
+        '<div class="actions"><button class="primary" data-action="begin">Create teaching</button>' +
+        '<button class="secondary" data-action="skip">Skip both</button></div></div>';
+    }
+
+    function consentView(session) {
+      const unsupported = data?.recorder && !data.recorder.supported;
+      return '<div class="stack">' +
+        '<div><p class="eyebrow">Ready when you are</p><h1>' + escapeHtml(session.name || "Untitled workflow") + '</h1></div>' +
+        '<p>Starting creates a short-lived authorization receipt, then invokes GNOME’s visible native recorder.</p>' +
+        recorderStatus() +
+        '<div class="grid">' +
+        '<div class="card"><strong>Recorded</strong><span>Selected screen and cursor</span></div>' +
+        '<div class="card"><strong>Stored locally</strong><span>Private session directory</span></div>' +
+        '<div class="card"><strong>Not collected</strong><span>Mic, clipboard, raw keys</span></div>' +
+        '</div><div class="actions"><button class="primary" data-action="start" ' + (unsupported ? 'disabled' : '') + '>I’m ready — start recording</button></div></div>';
+    }
+
+    function recordingView(session) {
+      return '<div class="recording-panel"><div class="status" style="border-color:rgba(255,255,255,.14);background:rgba(255,255,255,.08)">' +
+        '<span class="dot recording"></span><div><strong>Recording is active</strong><small>Your screen and cursor are being captured locally.</small></div></div>' +
+        '<div class="timer" id="timer">00:00</div><p>Complete the workflow naturally. End it here or say “done” in the conversation.</p>' +
+        '<div class="actions" style="margin-top:18px"><button class="danger" data-action="stop">End recording</button></div></div>';
+    }
+
+    function processingView() {
+      return '<div class="stack"><p class="eyebrow">Processing</p><h1>Turning the demonstration into a process…</h1>' +
+        '<p>Teach GPT is extracting bounded frames and asking GPT-5.6 for structured labels.</p></div>';
+    }
+
+    function reviewView(analysis) {
+      const steps = (analysis.steps || []).map((step, index) => '<li class="step"><span class="step-index">' +
+        (index + 1) + '</span><div><strong>' + escapeHtml(step.title) + '</strong><p>' + escapeHtml(step.instruction) + '</p></div></li>').join("");
+      const alternatives = (analysis.alternatives || []).map((alternative) => '<div class="card"><strong>' +
+        escapeHtml(alternative.name) + '</strong><span>' + escapeHtml(alternative.description) + ' · ' +
+        escapeHtml(alternative.verification_status) + '</span></div>').join("");
+      return '<div class="stack"><div><p class="eyebrow">Review what Codex learned</p><h1>' + escapeHtml(analysis.name) + '</h1></div>' +
+        '<span class="pill">' + escapeHtml(analysis.replayability?.status || "unknown") + '</span>' +
+        '<label>Name <input id="review-name" maxlength="80" value="' + escapeHtml(analysis.name) + '" /></label>' +
+        '<label>Description <textarea id="review-description" maxlength="400">' + escapeHtml(analysis.description) + '</textarea></label>' +
+        '<label>Goal <textarea id="review-goal" maxlength="400">' + escapeHtml(analysis.goal) + '</textarea></label>' +
+        '<label>Category <input id="review-category" maxlength="80" value="' + escapeHtml(analysis.category) + '" /></label>' +
+        '<div class="stack"><h2>Steps</h2><ol class="steps">' + steps + '</ol></div>' +
+        (alternatives ? '<div class="stack"><h2>Output-equivalent alternatives</h2><div class="grid">' + alternatives + '</div></div>' : '') +
+        '<div class="actions"><button class="secondary" data-action="save">Save edits</button>' +
+        '<button class="secondary" data-action="optimize">Suggest alternatives</button>' +
+        '<button class="primary" data-action="publish">Publish skill</button></div></div>';
+    }
+
+    function publishedView(session) {
+      const skill = session.published_skill;
+      return '<div class="stack"><p class="eyebrow">Skill published</p><h1>' + escapeHtml(skill?.name || "Workflow ready") + '</h1>' +
+        '<p>The reviewed process is now available to Codex as a portable local skill.</p>' +
+        '<div class="card"><strong>Invoke it</strong><span>$' + escapeHtml(skill?.name || "skill-name") + '</span></div></div>';
+    }
+
+    function render() {
+      const session = data?.session;
+      const state = session?.state;
+      let html;
+      if (!session || data.stage === "setup") html = setupView();
+      else if (state === "draft" || state === "ready") html = consentView(session);
+      else if (state === "recording") html = recordingView(session);
+      else if (state === "processing") html = processingView();
+      else if (state === "review" && data.analysis) html = reviewView(data.analysis);
+      else if (state === "published") html = publishedView(session);
+      else html = '<div class="stack"><h1>Teaching session</h1><p>' + escapeHtml(data?.next_action || state || "Waiting") + '</p></div>';
+      app.innerHTML = (errorMessage ? '<div class="error" role="alert">' + escapeHtml(errorMessage) + '</div>' : '') + html;
+      app.classList.toggle("busy", busy);
+      if (state === "recording") updateTimer(session.recording?.started_at);
+    }
+
+    function updateTimer(startedAt) {
+      const timer = document.querySelector("#timer");
+      if (!timer || !startedAt) return;
+      const seconds = Math.max(0, Math.floor((Date.now() - Date.parse(startedAt)) / 1000));
+      timer.textContent = String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0");
+    }
+    setInterval(() => data?.session?.state === "recording" && updateTimer(data.session.recording?.started_at), 1000);
+
+    async function run(action) {
+      const formValues = {
+        name: document.querySelector("#name")?.value || undefined,
+        description: document.querySelector("#description")?.value || undefined,
+        reviewName: document.querySelector("#review-name")?.value,
+        reviewDescription: document.querySelector("#review-description")?.value,
+        reviewGoal: document.querySelector("#review-goal")?.value,
+        reviewCategory: document.querySelector("#review-category")?.value
+      };
+      busy = true; errorMessage = ""; render();
+      try {
+        const sessionId = data?.session?.id;
+        if (action === "begin" || action === "skip") {
+          const args = action === "skip" ? {} : {
+            name: formValues.name,
+            description: formValues.description
+          };
+          data = unwrap(await callTool("teach_begin", args));
+        } else if (action === "start") {
+          data = unwrap(await callTool("teach_start", { session_id: sessionId, consent: true }));
+        } else if (action === "stop") {
+          data = unwrap(await callTool("teach_stop", { session_id: sessionId }));
+          render();
+          data = unwrap(await callTool("teach_analyze", { session_id: sessionId }));
+        } else if (action === "save") {
+          data = unwrap(await callTool("teach_review", {
+            session_id: sessionId,
+            name: formValues.reviewName,
+            description: formValues.reviewDescription,
+            goal: formValues.reviewGoal,
+            category: formValues.reviewCategory
+          }));
+        } else if (action === "optimize") {
+          data = unwrap(await callTool("teach_optimize", { session_id: sessionId }));
+        } else if (action === "publish") {
+          data = unwrap(await callTool("teach_publish", { session_id: sessionId }));
+        }
+      } catch (error) {
+        errorMessage = error?.message || error?.data?.message || JSON.stringify(error);
+      } finally {
+        busy = false; render();
+      }
+    }
+
+    app.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-action]");
+      if (button && !button.disabled) run(button.dataset.action);
+    });
+
+    window.addEventListener("message", (event) => {
+      if (event.source !== window.parent) return;
+      const message = event.data;
+      if (!message || message.jsonrpc !== "2.0") return;
+      if (message.id != null) {
+        const task = pending.get(message.id);
+        if (!task) return;
+        clearTimeout(task.timeout); pending.delete(message.id);
+        if (message.error) task.reject(message.error); else task.resolve(message.result);
+        return;
+      }
+      if (message.method === "ui/notifications/tool-result") {
+        data = message.params?.structuredContent ?? data;
+        errorMessage = "";
+        render();
+      }
+    }, { passive: true });
+
+    render();
+  </script>
+</body>
+</html>`;
