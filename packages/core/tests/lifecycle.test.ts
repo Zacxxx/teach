@@ -7,12 +7,24 @@ import {
   analyzeSession,
   compileDraftSkill,
   createSession,
+  discoverSessionBusAddress,
   getSession,
   markReady,
   publishSkill,
   startRecording,
   stopRecording,
 } from "../src/index.ts";
+
+test("graphical session bus is discovered without inherited desktop variables", () => {
+  assert.equal(
+    discoverSessionBusAddress({}, 1000),
+    "unix:path=/run/user/1000/bus",
+  );
+  assert.equal(
+    discoverSessionBusAddress({ DBUS_SESSION_BUS_ADDRESS: "unix:path=/custom/bus" }, 1000),
+    "unix:path=/custom/bus",
+  );
+});
 
 test("fixture journey records consent, labels the process, and publishes a skill", async () => {
   const root = await mkdtemp(join(tmpdir(), "teach-gpt-test-"));

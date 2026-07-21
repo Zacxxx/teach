@@ -1,8 +1,8 @@
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
-import { access, mkdir, readFile, rm } from "node:fs/promises";
+import { mkdir, readFile, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
-import { getSession, sessionDir, teachHome, transitionSession, writeJsonAtomic } from "./store.ts";
+import { getSession, sessionDir, teachHome, transitionSession, updateSession, writeJsonAtomic } from "./store.ts";
 import type { AuthorizationReceipt, TeachSession } from "./types.ts";
 
 const activePath = () => join(teachHome(), "active-recording.json");
@@ -16,9 +16,62 @@ export async function markReady(id: string): Promise<TeachSession> {
     purpose: "user_directed_workflow_teaching",
     capture: { screen: true, microphone: false, raw_keystrokes: false, clipboard: false },
   };
+  const current = await getSession(id);
+  if (current.state === "ready") {
+    return updateSession(id, "recording_authorization_refreshed", (session) => {
+      session.authorization = receipt;
+    });
+  }
+  if (current.state !== "draft") throw new Error(`recording_authorization_unavailable:${current.state}`);
   return transitionSession(id, "ready", "recording_authorized", (session) => {
     session.authorization = receipt;
   });
+}
+
+export interface RecorderSupport {
+  backend: "gnome" | "demo";
+  supported: boolean;
+  label: string;
+  detail: string;
+}
+
+export function probeRecordingSupport(): RecorderSupport {
+  if (process.env.TEACH_GPT_RECORDER?.toLowerCase() === "demo") {
+    return {
+      backend: "demo",
+      supported: true,
+      label: "Deterministic demo recorder",
+      detail: "Synthetic test recording is enabled.",
+    };
+  }
+
+  const env = graphicalSessionEnvironment();
+  const address = env.DBUS_SESSION_BUS_ADDRESS;
+  if (!address) {
+    return {
+      backend: "gnome",
+      supported: false,
+      label: "GNOME screen recorder",
+      detail: "The user session D-Bus address could not be discovered.",
+    };
+  }
+
+  const result = spawnSync("gdbus", [
+    "introspect",
+    "--address", address,
+    "--dest", "org.gnome.Shell.Screencast",
+    "--object-path", "/org/gnome/Shell/Screencast",
+  ], { encoding: "utf8", env });
+  const output = `${result.stdout || ""} ${result.stderr || ""}`;
+  const supported = result.status === 0 && /ScreencastSupported\s*=\s*true/.test(output);
+  return {
+    backend: "gnome",
+    supported,
+    label: "GNOME Wayland screen recorder",
+    detail: supported
+      ? "Native GNOME capture is available. No Codex relaunch or exported display variables are required."
+      : `Native GNOME capture is unavailable: ${sanitize(output)}`,
+  };
 }
 
 export async function startRecording(id: string): Promise<TeachSession> {
@@ -76,12 +129,12 @@ async function assertNoActiveRecording(): Promise<void> {
 }
 
 function startGnomeRecording(path: string): void {
-  if (process.env.XDG_SESSION_TYPE !== "wayland") {
-    throw new Error("gnome_wayland_required_or_set_TEACH_GPT_RECORDER_demo");
-  }
+  const support = probeRecordingSupport();
+  if (!support.supported) throw new Error(`gnome_recording_unavailable:${support.detail}`);
+  const env = graphicalSessionEnvironment();
   const result = spawnSync("gdbus", [
     "call",
-    "--session",
+    "--address", env.DBUS_SESSION_BUS_ADDRESS!,
     "--dest",
     "org.gnome.Shell.Screencast",
     "--object-path",
@@ -90,23 +143,24 @@ function startGnomeRecording(path: string): void {
     "org.gnome.Shell.Screencast.Screencast",
     path,
     "{'framerate': <30>, 'draw-cursor': <true>}",
-  ], { encoding: "utf8" });
+  ], { encoding: "utf8", env });
   if (result.status !== 0 || !result.stdout.includes("true")) {
     throw new Error(`gnome_recording_failed:${sanitize(result.stderr || result.stdout)}`);
   }
 }
 
 function stopGnomeRecording(): void {
+  const env = graphicalSessionEnvironment();
   const result = spawnSync("gdbus", [
     "call",
-    "--session",
+    "--address", env.DBUS_SESSION_BUS_ADDRESS!,
     "--dest",
     "org.gnome.Shell.Screencast",
     "--object-path",
     "/org/gnome/Shell/Screencast",
     "--method",
     "org.gnome.Shell.Screencast.StopScreencast",
-  ], { encoding: "utf8" });
+  ], { encoding: "utf8", env });
   if (result.status !== 0 || !result.stdout.includes("true")) {
     throw new Error(`gnome_stop_failed:${sanitize(result.stderr || result.stdout)}`);
   }
@@ -136,15 +190,43 @@ function extractFrames(recording: string, directory: string): { directory: strin
 }
 
 async function waitForFile(path: string): Promise<void> {
-  for (let attempt = 0; attempt < 50; attempt += 1) {
+  let previousSize = -1;
+  let stableChecks = 0;
+  for (let attempt = 0; attempt < 100; attempt += 1) {
     try {
-      await access(path);
-      return;
+      const info = await stat(path);
+      if (info.size > 0 && info.size === previousSize) stableChecks += 1;
+      else stableChecks = 0;
+      previousSize = info.size;
+      if (stableChecks >= 2) return;
     } catch {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      stableChecks = 0;
     }
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
-  throw new Error("recording_file_missing");
+  throw new Error("recording_file_missing_or_incomplete");
+}
+
+function graphicalSessionEnvironment(): NodeJS.ProcessEnv {
+  const uid = typeof process.getuid === "function" ? process.getuid() : undefined;
+  const runtime = process.env.XDG_RUNTIME_DIR?.trim()
+    || (uid === undefined ? undefined : `/run/user/${uid}`);
+  const bus = discoverSessionBusAddress(process.env, uid);
+  return {
+    ...process.env,
+    ...(runtime ? { XDG_RUNTIME_DIR: runtime } : {}),
+    ...(bus ? { DBUS_SESSION_BUS_ADDRESS: bus } : {}),
+  };
+}
+
+export function discoverSessionBusAddress(
+  env: NodeJS.ProcessEnv = process.env,
+  uid: number | undefined = typeof process.getuid === "function" ? process.getuid() : undefined,
+): string | undefined {
+  const configured = env.DBUS_SESSION_BUS_ADDRESS?.trim();
+  if (configured) return configured;
+  const runtime = env.XDG_RUNTIME_DIR?.trim() || (uid === undefined ? undefined : `/run/user/${uid}`);
+  return runtime ? `unix:path=${runtime}/bus` : undefined;
 }
 
 function sanitize(value: string): string {
