@@ -201,6 +201,14 @@ to access native desktop recorders. A transparent submission dossier records
 the exact listing, tests, policies, and remaining eligibility gate rather than
 calling a public GitHub marketplace an approved Store listing.
 
+## 2026-07-21 - Plugin-browser logo fit
+
+The Plugins Directory tile rendered the Teach mark too small because its
+square image slot received the full horizontal wordmark. The manifest now uses
+the edge-to-edge square Teach mark for both `logo` and `composerIcon`. Repository
+validation locks that mapping while the horizontal SVG remains available for
+wide brand placements.
+
 ## Decision log
 
 | Decision | Why |

@@ -158,3 +158,12 @@ evals.
 This produced the animated analysis heartbeat, elapsed timer, rotating status,
 reduced-motion behavior, public-directory submission dossier, and the final
 under-three-minute directing and voiceover script.
+
+## Plugin-browser logo feedback - 2026-07-21
+
+> The plugin image used in the Codex plugin browser is small and does not fill
+> the available tile.
+
+The browser had been given the horizontal wordmark for a square image slot.
+Teach now uses its edge-to-edge square mark for both the plugin browser and
+composer while retaining the horizontal asset for other brand placements.

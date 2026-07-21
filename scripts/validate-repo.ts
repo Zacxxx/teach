@@ -5,12 +5,15 @@ const root = process.cwd();
 const pluginRoot = join(root, "plugins", "teach");
 const rootPackage = JSON.parse(await readFile(join(root, "package.json"), "utf8")) as { scripts?: Record<string, string> };
 const manifest = JSON.parse(await readFile(join(pluginRoot, ".codex-plugin", "plugin.json"), "utf8")) as Record<string, unknown>;
+const interfaceMetadata = manifest.interface as Record<string, unknown>;
 
 assert(manifest.name === "teach", "plugin name must match its folder");
 assert(/^\d+\.\d+\.\d+/.test(String(manifest.version)), "plugin version must be semver");
 assert(typeof manifest.description === "string" && manifest.description.length > 20, "plugin description is required");
 assert(manifest.mcpServers === "./.mcp.json", "plugin must declare its MCP companion file");
 assert(manifest.skills === "./skills/", "plugin must declare its skills directory");
+assert(interfaceMetadata.composerIcon === "./assets/icon.svg", "composer icon must use the square Teach mark");
+assert(interfaceMetadata.logo === "./assets/icon.svg", "plugin browser logo must use the edge-to-edge square Teach mark");
 
 for (const relative of [
   ".mcp.json",
