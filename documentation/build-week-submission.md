@@ -22,8 +22,9 @@ Live Devpost data was checked on 2026-07-21. Submissions close at
 
 ## Required assets
 
-- [ ] Public `https://github.com/Zacxxx/teach-gpt` repository with Apache-2.0 license.
-- [ ] Fresh `make check` and `make demo` result.
+- [x] Public `https://github.com/Zacxxx/teach-gpt` repository with Apache-2.0 license.
+- [x] Fresh `make check` and `make demo` result.
+- [x] Devpost draft: `https://devpost.com/software/teach-gpt` (project 1357201).
 - [ ] Under-three-minute public or unlisted YouTube demo.
 - [ ] Voiceover explicitly covers the product, Codex, and GPT-5.6.
 - [ ] `/feedback` Codex session ID from the main implementation task.
@@ -46,8 +47,9 @@ Live Devpost data was checked on 2026-07-21. Submissions close at
 When implementation and video are ready:
 
 1. Call the Devpost plugin submission-requirements tool again for last-minute changes.
-2. Create or update the **Teach GPT** Devpost project with tagline, description,
-   built-with values, repository URL, and video URL.
+2. Update the existing **Teach GPT** draft (project 1357201) with the final
+   reviewed description and video URL. Its tagline, built-with values, and
+   repository URL are already populated.
 3. Fill fields 27945-27951, including France, Work & Productivity, repository,
    `/feedback` session ID, and judge testing instructions.
 4. Submit through the plugin.
@@ -56,4 +58,3 @@ When implementation and video are ready:
 
 Do not perform step 4 until the user has reviewed the final video URL,
 description, category, and session ID.
-
