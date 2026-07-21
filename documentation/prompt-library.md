@@ -26,6 +26,14 @@ recording, storage, and capabilities Codex does not natively provide.
 > SQLite, and add documentation for the devlog, prompt library, design, and
 > architecture.
 
+## Installed-flow feedback prompt - 2026-07-21
+
+> The buttons did not appear, although Codex has a native way to expose UI.
+> No package was installed, the recording failed, and the UX is poor.
+
+This feedback led to the embedded MCP Apps interface, self-contained Linux
+runtime, and recorder session-bus discovery work documented in the devlog.
+
 ## Runtime recording-analysis prompt
 
 The analyzer receives this template together with `session.json`, sampled
@@ -65,4 +73,3 @@ available tools, pause for approvals at external effects, verify the declared
 output contract, and report any capability mismatch instead of improvising a
 different result.
 ```
-

@@ -2,8 +2,8 @@
 
 Teach GPT is an open-source, Linux-first Codex plugin that learns a reusable
 skill from a workflow you demonstrate. You describe the goal or skip naming,
-approve a visible recording, perform the task, stop naturally or from the local
-control surface, review a structured process draft, and publish it as a normal
+approve a visible recording in Codex, perform the task, stop naturally or from
+the embedded control surface, review a structured process draft, and publish it as a normal
 Codex skill.
 
 This project was created for **OpenAI Build Week 2026** with Codex and GPT-5.6.
@@ -21,7 +21,7 @@ separate implementation with a different product boundary:
   variability, replayability, blockers, and verification criteria.
 - **Reviewable by design:** recording consent, local artifacts, editable drafts,
   capability-based replay labels, and versioned publishing.
-- **Product UX:** a local dashboard and recording controls instead of a prompt-only flow.
+- **Product UX:** native MCP Apps controls embedded in Codex instead of a prompt-only flow.
 - **Optimization with proof:** alternatives are separated from verified
   output-equivalent methods.
 
@@ -29,7 +29,9 @@ Teach GPT is not affiliated with or a replacement for OpenAI Record & Replay.
 
 ## Architecture in one minute
 
-The Codex plugin bundles a `$teach` skill and a local MCP server. The server
+The Codex plugin bundles a `$teach` skill, an MCP Apps interface, and a local
+MCP server. The Linux plugin also bundles a self-extracting x86_64 backend, so
+installing the plugin does not require Bun or an npm package install. The server
 uses `@teach-gpt/core`, a self-hostable package that stores each session as a
 plain directory:
 
@@ -50,11 +52,13 @@ the no-credentials judge demo.
 
 ## Requirements
 
-- Linux; GNOME Wayland is the supported native recording target for v0.1.
-- Bun 1.3.3 or newer.
+- Linux x86_64; GNOME Wayland is the supported native recording target for v0.2.
 - Codex Desktop or Codex CLI for plugin usage and GPT-5.6 analysis.
 - `ffmpeg` for keyframe extraction.
-- GNOME Shell Screencast D-Bus support for native recording.
+- GNOME Shell Screencast D-Bus support and `gdbus` for native recording.
+
+Bun 1.3.3 or newer is required only for source development and the deterministic
+repository demo, not for an installed plugin.
 
 Other Linux desktops can use `TEACH_GPT_RECORDER=demo` today or add a recorder
 adapter without changing the session format.
@@ -74,7 +78,7 @@ make demo
 The command prints the created session, analysis, and generated skill paths.
 It never records the desktop and writes only to a temporary directory.
 
-## Run the local dashboard
+## Run the optional development dashboard
 
 ```bash
 cp .env.example .env.local
@@ -82,8 +86,9 @@ bun install --frozen-lockfile
 make dev
 ```
 
-Open `http://127.0.0.1:3141`. Keep the dashboard loopback-only because it can
-control local recording and access recording metadata.
+Open `http://127.0.0.1:3141`. The installed plugin does not require this server;
+its controls are rendered inside Codex. Keep the development dashboard
+loopback-only because it can control local recording and access recording metadata.
 
 ## Install the Codex plugin
 
@@ -94,13 +99,14 @@ codex plugin marketplace add "$PWD"
 codex plugin add teach-gpt@teach-gpt
 ```
 
-Then invoke `@teach-gpt`, `$teach`, or say "teach this workflow." The expected
-conversation is:
+Then invoke `@teach-gpt`, `$teach`, or say "teach this workflow." Start a new
+Codex task after installation so the plugin index is refreshed. The embedded
+panel drives the flow:
 
 1. Optionally name and describe the workflow.
 2. Confirm readiness and grant the visible recording permission.
 3. Demonstrate the workflow.
-4. Say "I'm done" or use **End recording** in the dashboard.
+4. Say "I'm done" or use **End recording** in the embedded panel.
 5. Review labels and steps; optionally request equivalent alternatives.
 6. Publish the generated skill and use it in a new Codex task.
 
@@ -139,4 +145,3 @@ publishing paths. Model output cannot silently publish or execute a workflow.
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE).
-

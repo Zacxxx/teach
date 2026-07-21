@@ -52,7 +52,7 @@ are displayed separately and never replace the reviewed process.
 OpenAI Record & Replay is the closest product reference and validates the core
 interaction. Teach GPT differentiates through:
 
-| Dimension | Teach GPT v0.1 |
+| Dimension | Teach GPT v0.2 |
 | --- | --- |
 | Source | Apache-2.0, self-hostable |
 | Platform | Linux/GNOME Wayland first |
@@ -61,7 +61,7 @@ interaction. Teach GPT differentiates through:
 | Labels | Rich process, risk, capability, and output-contract schema |
 | Review | Editable process draft before publishing |
 | Optimization | Exact-output contract and verification status |
-| UX | Local dashboard plus conversational plugin flow |
+| UX | Embedded Codex controls via MCP Apps; optional development dashboard |
 | Extensibility | Recorder adapters and portable Codex skills |
 
 Teach GPT does not copy or claim compatibility with the private implementation
@@ -84,3 +84,11 @@ publicly documented behavior and Corridor-derived governance principles.
 - Motion respects `prefers-reduced-motion`.
 - Buttons remain labeled with verbs rather than icons alone.
 
+## Codex-native interaction
+
+The primary interface is an embedded MCP Apps component. Setup, optional
+metadata, recorder readiness, consent, active duration, stopping, review,
+optimization, and publishing remain visible in one panel. Natural-language
+commands remain available, but they are a parallel control path rather than a
+replacement for buttons. If a host cannot render MCP Apps, the Teach skill
+falls back to the same lifecycle through explicit conversational prompts.

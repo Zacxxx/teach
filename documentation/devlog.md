@@ -39,6 +39,20 @@ can be exported or versioned without a database tool, and failures are easier to
 repair. Atomic JSON writes and append-only JSONL events provide the required
 durability without hiding the product state.
 
+## 2026-07-21 - Installed-flow correction
+
+The first installed-plugin test failed at the most important boundary. Codex
+showed a prompt-only exchange, no buttons, and the recorder rejected the
+sanitized plugin environment before capturing anything. The proposed workaround
+of relaunching Codex with exported desktop variables was not acceptable product UX.
+
+The plugin now registers a native MCP Apps component that owns the visible
+setup, consent, recording, review, optimization, and publish controls. The GNOME
+adapter reconstructs the current user's D-Bus address without inherited desktop
+variables. A compressed, self-extracting Linux x86_64 runtime ships inside the
+plugin, eliminating the installed-user Bun/package-install dependency. Protocol
+tests execute that packaged wrapper with a deliberately minimal environment.
+
 ## Decision log
 
 | Decision | Why |
@@ -50,4 +64,5 @@ durability without hiding the product state.
 | Codex exec analyzer | Uses the installed Codex surface and GPT-5.6 without requiring API credits. |
 | Fixture demo | Lets judges test the full lifecycle without recording or rebuilding. |
 | Capability-based replay label | Prevent a model from claiming it can redo unavailable actions. |
-
+| Embedded MCP Apps component | Make the full lifecycle usable inside Codex with native controls. |
+| Bundled compressed runtime | Make plugin installation sufficient for judges and users on supported Linux. |

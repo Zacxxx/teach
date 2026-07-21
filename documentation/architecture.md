@@ -5,9 +5,9 @@
 ```mermaid
 flowchart LR
     U["User"] --> C["Codex + Teach skill"]
+    C --> W["Embedded MCP Apps UI"]
     C --> M["Teach MCP server"]
-    U --> W["Local review dashboard"]
-    W --> K["Teach core package"]
+    W --> M
     M --> K
     K --> R["GNOME recorder adapter"]
     K --> F["File workspace"]
@@ -19,8 +19,10 @@ flowchart LR
 
 ### `plugins/teach-gpt`
 
-Installable Codex bundle containing the `$teach` orchestration skill, MCP
-configuration, manifest, and product assets. It does not hold user recordings.
+Installable Codex bundle containing the `$teach` orchestration skill, MCP Apps
+component, MCP configuration, self-extracting Linux x86_64 runtime, manifest,
+and product assets. It does not hold user recordings. First use expands the
+versioned runtime into the user's cache with private permissions.
 
 ### `packages/core`
 
@@ -30,14 +32,15 @@ self-hostable foundation other interfaces can reuse.
 
 ### `packages/mcp`
 
-Thin stdio MCP server exposing typed tools for begin, start, stop, analyze,
-review, optimize, publish, list, and inspect. It delegates all state changes to
-core and returns the next expected user action.
+Thin stdio MCP server exposing typed tools for open, begin, start, stop,
+analyze, review, optimize, publish, list, and inspect. It registers a
+`text/html;profile=mcp-app` resource so supported Codex hosts render the full
+teaching lifecycle natively. It delegates all state changes to core.
 
 ### `apps/web`
 
-Loopback-only Next.js dashboard. It provides visible recording controls and a
-review UI over the same core package. It is not a hosted multi-user service.
+Optional loopback-only Next.js development dashboard over the same core
+package. It is not required by the installed plugin or a hosted multi-user service.
 
 ## File workspace
 
@@ -66,7 +69,9 @@ idempotency key in the event log.
 
 ## Recording
 
-The GNOME adapter calls `org.gnome.Shell.Screencast`, which displays the native
+The GNOME adapter discovers the current user's D-Bus socket from the operating
+system rather than relying on graphical environment variables inherited by the
+sandboxed plugin process. It calls `org.gnome.Shell.Screencast`, which displays the native
 desktop recording indicator. Stop calls `StopScreencast`; `ffmpeg` then samples
 bounded frames. The adapter does not register a keyboard event listener. A demo
 adapter creates a synthetic clip for tests and judging.
@@ -95,9 +100,8 @@ so the initial skill index is refreshed.
 
 ## Trust boundary
 
-The dashboard and MCP server run locally. There is no inbound network listener
-except the explicitly started loopback dashboard. Raw artifacts are never sent
+The embedded component and MCP server run locally. There is no inbound network
+listener unless the optional development dashboard is explicitly started. Raw artifacts are never sent
 to Devpost, GitHub, or an OpenAI API by the core package. The default analyzer
 uses the user's configured Codex host; its sandbox and account policy still
 apply.
-

@@ -16,7 +16,7 @@ Live Devpost data was checked on 2026-07-21. Submissions close at
 | Criterion | Evidence |
 | --- | --- |
 | Technological Implementation | Native GNOME capture, MCP lifecycle, GPT-5.6 structured analysis, skill compiler, tests. |
-| Design | Conversational flow plus a complete local recording/review dashboard. |
+| Design | Embedded Codex setup, consent, recording, review, and publish controls via MCP Apps. |
 | Potential Impact | Lets non-developers author repeatable Codex workflows by demonstration. |
 | Quality of Idea | Open Linux implementation goes beyond recording into governed process labelisation and verified alternatives. |
 
@@ -30,13 +30,13 @@ Live Devpost data was checked on 2026-07-21. Submissions close at
 - [x] `/feedback` Codex session ID from the main implementation task:
   `019f826b-60ea-7632-a9c6-30ab3724d963`.
 - [ ] Devpost description in a human voice.
-- [ ] Plugin install steps, supported platforms, and deterministic test path.
+- [x] Plugin install steps, supported platforms, and deterministic test path.
 - [ ] Team members added and invitations accepted, if any.
 
 ## Demo video outline
 
 1. **0:00-0:20 - Problem:** describing a UI workflow is tedious and ambiguous.
-2. **0:20-0:45 - Consent:** invoke `$teach`, skip or enter metadata, approve recording.
+2. **0:20-0:45 - Consent:** invoke `$teach`, show the embedded panel, skip or enter metadata, approve recording.
 3. **0:45-1:25 - Demonstration:** perform a short Linux workflow and stop it.
 4. **1:25-2:00 - GPT-5.6:** show generated labels, steps, software, duration, and replayability.
 5. **2:00-2:30 - Review:** edit a step and request an output-equivalent alternative.
