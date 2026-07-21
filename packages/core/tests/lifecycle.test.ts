@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm } from "node:fs/promises";
-import { tmpdir } from "node:os";
+import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import test from "node:test";
 import {
@@ -11,10 +11,13 @@ import {
   getSession,
   markReady,
   markRecordingFailed,
+  macosRecorderSpec,
+  nativeBackendForPlatform,
   publishSkill,
   startRecording,
   stopRecording,
   teachHome,
+  windowsRecorderSpec,
 } from "../src/index.ts";
 
 test("graphical session bus is discovered without inherited desktop variables", () => {
@@ -40,6 +43,46 @@ test("the renamed runtime still honors the legacy data-home override", () => {
     else process.env.TEACH_HOME = current;
     if (legacy === undefined) delete process.env.TEACH_GPT_HOME;
     else process.env.TEACH_GPT_HOME = legacy;
+  }
+});
+
+test("native recorder selection and command shapes cover all desktop targets", () => {
+  assert.equal(nativeBackendForPlatform("linux"), "gnome");
+  assert.equal(nativeBackendForPlatform("darwin"), "macos");
+  assert.equal(nativeBackendForPlatform("win32"), "windows");
+  assert.equal(nativeBackendForPlatform("freebsd"), undefined);
+
+  const mac = macosRecorderSpec("/tmp/teach-recording");
+  assert.equal(mac.command, "/usr/sbin/screencapture");
+  assert.deepEqual(mac.args, ["-v", "-C", "/tmp/teach-recording.mov"]);
+  assert.equal(mac.stop, "signal");
+
+  const windows = windowsRecorderSpec("C:\\Teach\\recording");
+  assert.equal(windows.command, "ffmpeg");
+  assert.ok(windows.args.includes("gdigrab"));
+  assert.ok(windows.args.includes("desktop"));
+  assert.ok(windows.args.includes("1"));
+  assert.equal(windows.path, "C:\\Teach\\recording.mkv");
+  assert.equal(windows.stop, "stdin");
+});
+
+test("default session storage follows each host convention", () => {
+  const currentHome = process.env.TEACH_HOME;
+  const currentLegacyHome = process.env.TEACH_GPT_HOME;
+  const currentLocalData = process.env.LOCALAPPDATA;
+  delete process.env.TEACH_HOME;
+  delete process.env.TEACH_GPT_HOME;
+  process.env.LOCALAPPDATA = "C:\\Users\\Test\\AppData\\Local";
+  try {
+    assert.equal(teachHome("win32"), join("C:\\Users\\Test\\AppData\\Local", "Teach"));
+    assert.equal(teachHome("darwin"), join(homedir(), "Library", "Application Support", "Teach"));
+  } finally {
+    if (currentHome === undefined) delete process.env.TEACH_HOME;
+    else process.env.TEACH_HOME = currentHome;
+    if (currentLegacyHome === undefined) delete process.env.TEACH_GPT_HOME;
+    else process.env.TEACH_GPT_HOME = currentLegacyHome;
+    if (currentLocalData === undefined) delete process.env.LOCALAPPDATA;
+    else process.env.LOCALAPPDATA = currentLocalData;
   }
 });
 

@@ -25,7 +25,7 @@ import { TEACH_WIDGET_HTML, TEACH_WIDGET_URI } from "./widget.ts";
 
 const server = new McpServer({
   name: "teach",
-  version: "0.2.0",
+  version: "0.3.0",
   websiteUrl: "https://github.com/Zacxxx/teach",
 }, {
   instructions: "When a user wants to teach a workflow, call teach_open immediately. The embedded Teach UI is the primary metadata, consent, recording, review, optimization, and publishing surface. Do not replace its buttons with prose questions unless the host cannot render MCP Apps UI. Never call teach_start before a separate explicit UI click or ready response.",

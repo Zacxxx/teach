@@ -176,7 +176,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
 
     async function initialize() {
       const initialized = await request("ui/initialize", {
-        appInfo: { name: "teach-widget", version: "0.2.0" },
+        appInfo: { name: "teach-widget", version: "0.3.0" },
         appCapabilities: {},
         protocolVersion: "2026-01-26"
       });
@@ -223,7 +223,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
       const unsupported = data?.recorder && !data.recorder.supported;
       return '<div class="stack">' +
         '<div><p class="eyebrow">Ready when you are</p><h1>' + escapeHtml(session.name || "Untitled workflow") + '</h1></div>' +
-        '<p>Starting creates a short-lived authorization receipt, then invokes GNOME’s visible native recorder.</p>' +
+        '<p>Starting creates a short-lived authorization receipt, then invokes this computer’s supported screen recorder.</p>' +
         recorderProblem() +
         '<div class="grid">' +
         '<div class="card"><strong>Recorded</strong><span>Screen and pointer only</span></div>' +

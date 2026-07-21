@@ -4,11 +4,11 @@
   "workspaces": {
     "": {
       "name": "teach",
-      "version": "0.2.0",
+      "version": "0.3.0",
     },
     "apps/web": {
       "name": "@teach/web",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dependencies": {
         "@teach/core": "workspace:*",
         "lucide-react": "1.24.0",
@@ -27,7 +27,7 @@
     },
     "packages/core": {
       "name": "@teach/core",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "bin": {
         "teach": "./src/cli.ts",
       },
@@ -41,7 +41,7 @@
     },
     "packages/mcp": {
       "name": "@teach/mcp",
-      "version": "0.2.0",
+      "version": "0.3.0",
       "dependencies": {
         "@modelcontextprotocol/ext-apps": "1.7.4",
         "@modelcontextprotocol/sdk": "1.29.0",

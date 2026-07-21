@@ -1,10 +1,13 @@
 import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { mkdirSync, readdirSync } from "node:fs";
 import { mkdir, readFile, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
-import { abortGnomeRecorder, armGnomeRecorder, startGnomeRecorder, stopGnomeRecorder } from "./gnome-recorder.ts";
+import { macosRecorderAvailable } from "./macos-recorder.ts";
+import { abortNativeRecorder, armNativeRecorder, startNativeRecorder, stopNativeRecorder } from "./native-recorder.ts";
 import { getSession, sessionDir, teachHome, transitionSession, updateSession, writeJsonAtomic } from "./store.ts";
-import type { AuthorizationReceipt, TeachSession } from "./types.ts";
+import type { AuthorizationReceipt, NativeRecordingBackend, RecordingBackend, TeachSession } from "./types.ts";
+import { windowsRecorderAvailable } from "./windows-recorder.ts";
 
 const activePath = () => join(teachHome(), "active-recording.json");
 
@@ -35,19 +38,59 @@ export async function markReady(id: string): Promise<TeachSession> {
 }
 
 export interface RecorderSupport {
-  backend: "gnome" | "demo";
+  backend: RecordingBackend | "unsupported";
   supported: boolean;
   label: string;
   detail: string;
 }
 
-export function probeRecordingSupport(): RecorderSupport {
+export function probeRecordingSupport(platform: NodeJS.Platform = process.platform): RecorderSupport {
   if (teachRecorderSetting() === "demo") {
     return {
       backend: "demo",
       supported: true,
       label: "Deterministic demo recorder",
       detail: "Synthetic test recording is enabled.",
+    };
+  }
+
+  if (!commandAvailable("ffmpeg", ["-version"]) || !commandAvailable("ffprobe", ["-version"])) {
+    return {
+      backend: nativeBackendForPlatform(platform) ?? "unsupported",
+      supported: false,
+      label: "FFmpeg is required",
+      detail: "Install ffmpeg and ffprobe, then reopen Teach. They finalize recordings and extract bounded frames locally.",
+    };
+  }
+
+  const backend = nativeBackendForPlatform(platform);
+  if (backend === "macos") {
+    return {
+      backend,
+      supported: macosRecorderAvailable(),
+      label: "macOS screen recorder",
+      detail: macosRecorderAvailable()
+        ? "Apple screen capture is ready. macOS may request Screen & System Audio Recording permission on first use."
+        : "The macOS screencapture utility is unavailable.",
+    };
+  }
+  if (backend === "windows") {
+    const supported = windowsRecorderAvailable();
+    return {
+      backend,
+      supported,
+      label: "Windows 11 screen recorder",
+      detail: supported
+        ? "Windows desktop capture is ready. Teach stays visibly in recording mode until you stop."
+        : "This FFmpeg build does not provide the Windows gdigrab capture device.",
+    };
+  }
+  if (backend !== "gnome") {
+    return {
+      backend: "unsupported",
+      supported: false,
+      label: "Unsupported desktop",
+      detail: `Teach does not yet have a native recorder for ${platform}.`,
     };
   }
 
@@ -89,7 +132,7 @@ export async function startRecording(id: string): Promise<TeachSession> {
   if (Date.parse(session.authorization.expires_at) <= Date.now()) throw new Error("authorization_expired");
   await assertNoActiveRecording();
   const requested = teachRecorderSetting() || "auto";
-  const backend = requested === "demo" ? "demo" : "gnome";
+  const backend: RecordingBackend = requested === "demo" ? "demo" : requireNativeBackend(process.platform);
   let path = join(sessionDir(id), "recording.webm");
 
   try {
@@ -97,8 +140,8 @@ export async function startRecording(id: string): Promise<TeachSession> {
       await generateDemoRecording(path);
     } else {
       const requestedPath = join(sessionDir(id), `recording-${Date.now()}`);
-      path = await startGnomeRecorder(id, requestedPath, graphicalSessionEnvironment(), async (message) => {
-        await abortGnomeRecorder(id);
+      path = await startNativeRecorder(backend, id, requestedPath, graphicalSessionEnvironment(), async (message) => {
+        await abortNativeRecorder(backend, id);
         await markRecordingFailed(id, "native_recorder_failed", message);
       });
     }
@@ -111,10 +154,10 @@ export async function startRecording(id: string): Promise<TeachSession> {
         started_at: new Date().toISOString(),
       };
     }, { backend });
-    if (backend === "gnome") armGnomeRecorder(id);
+    if (backend !== "demo") armNativeRecorder(backend, id);
     return recording;
   } catch (error) {
-    if (backend === "gnome") await abortGnomeRecorder(id);
+    if (backend !== "demo") await abortNativeRecorder(backend, id);
     await clearActiveRecording(id);
     throw error;
   }
@@ -126,7 +169,7 @@ export async function stopRecording(id: string): Promise<TeachSession> {
   const active = JSON.parse(await readFile(activePath(), "utf8")) as { session_id: string; backend: string };
   if (active.session_id !== id) throw new Error("another_session_is_recording");
   try {
-    if (session.recording.backend === "gnome") await stopGnomeRecorder(id);
+    if (session.recording.backend !== "demo") await stopNativeRecorder(session.recording.backend, id);
     await waitForFile(session.recording.path);
     validateRecording(session.recording.path);
     const stoppedAt = new Date().toISOString();
@@ -141,7 +184,7 @@ export async function stopRecording(id: string): Promise<TeachSession> {
       current.recording.frame_count = frameResult.count;
     }, { duration_ms: durationMs, frame_count: frameResult.count });
   } catch (error) {
-    if (session.recording.backend === "gnome") await abortGnomeRecorder(id);
+    if (session.recording.backend !== "demo") await abortNativeRecorder(session.recording.backend, id);
     await markRecordingFailed(id, "recording_finalize_failed", errorMessage(error));
     throw error;
   }
@@ -199,15 +242,13 @@ function errorMessage(error: unknown): string {
 }
 
 function extractFrames(recording: string, directory: string): { directory: string; count: number } {
-  const mkdirResult = spawnSync("mkdir", ["-p", directory]);
-  if (mkdirResult.status !== 0) throw new Error("frame_directory_failed");
+  mkdirSync(directory, { recursive: true, mode: 0o700 });
   const result = spawnSync("ffmpeg", [
     "-loglevel", "error", "-y", "-i", recording,
     "-vf", "fps=1/3,scale='min(1280,iw)':-2", "-q:v", "3", join(directory, "frame-%04d.jpg"),
   ], { encoding: "utf8" });
   if (result.status !== 0) throw new Error(`frame_extraction_failed:${sanitize(result.stderr)}`);
-  const countResult = spawnSync("find", [directory, "-maxdepth", "1", "-name", "frame-*.jpg"], { encoding: "utf8" });
-  const count = countResult.stdout.split("\n").filter(Boolean).length;
+  const count = readdirSync(directory).filter((name) => /^frame-\d+\.jpg$/.test(name)).length;
   return { directory, count };
 }
 
@@ -257,4 +298,22 @@ function sanitize(value: string): string {
 
 function teachRecorderSetting(): string | undefined {
   return (process.env.TEACH_RECORDER || process.env.TEACH_GPT_RECORDER)?.toLowerCase();
+}
+
+export function nativeBackendForPlatform(platform: NodeJS.Platform): NativeRecordingBackend | undefined {
+  if (platform === "linux") return "gnome";
+  if (platform === "darwin") return "macos";
+  if (platform === "win32") return "windows";
+  return undefined;
+}
+
+function requireNativeBackend(platform: NodeJS.Platform): NativeRecordingBackend {
+  const backend = nativeBackendForPlatform(platform);
+  if (!backend) throw new Error(`native_recorder_unsupported:${platform}`);
+  return backend;
+}
+
+function commandAvailable(command: string, args: string[]): boolean {
+  const result = spawnSync(command, args, { encoding: "utf8", windowsHide: true });
+  return result.status === 0;
 }

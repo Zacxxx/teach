@@ -22,8 +22,10 @@ cannot render it.
 
 If the host does not render the component, use the same sequence conversationally:
 ask once for optional metadata, call `teach_begin`, state that only the selected
-screen and cursor are recorded while microphone, clipboard, and raw keystroke
-logging stay off, then ask for a separate ready response.
+screen area and cursor are recorded by the supported host adapter while
+microphone, clipboard, and raw keystroke logging stay off, then ask for a
+separate ready response. Read [platforms.md](references/platforms.md) when
+recorder setup or OS permissions require explanation.
 
 Never infer readiness from the initial request. The separate ready response is
 the authorization boundary.

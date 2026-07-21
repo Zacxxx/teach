@@ -107,14 +107,14 @@ export function TeachDashboard({ initialSessions, initialAnalysis }: { initialSe
     <main>
       <header className="topbar">
         <a className="brand" href="#top" aria-label="Teach home"><span className="brand-mark">T<span /></span><strong>Teach</strong></a>
-        <span className="open-source"><Sparkles size={14} /> Open source · Linux first</span>
+        <span className="open-source"><Sparkles size={14} /> Open source · Cross-platform</span>
       </header>
 
       <section className="hero" id="top">
         <div className="eyebrow"><span /> SHOW ONCE. REUSE WITH CODEX.</div>
         <h1>Teach the process.<br /><em>Keep the judgment.</em></h1>
         <p>Record a workflow with visible consent. GPT-5.6 turns it into a labeled, editable process. You decide whether it becomes a skill.</p>
-        <div className="trust-row"><span><ShieldCheck size={17} /> Local artifacts</span><span><MonitorUp size={17} /> Native Linux capture</span><span><FileCode2 size={17} /> Portable skills</span></div>
+        <div className="trust-row"><span><ShieldCheck size={17} /> Local artifacts</span><span><MonitorUp size={17} /> Cross-platform capture</span><span><FileCode2 size={17} /> Portable skills</span></div>
       </section>
 
       <section className="workspace">
@@ -160,7 +160,7 @@ function SessionControl({ session, analysis, busy, action }: { session: Session;
   if (session.state === "draft") return (
     <div className="ready-card">
       <div className="state-number">01</div><small>READY WHEN YOU ARE</small><h2>{session.name || "Untitled teaching"}</h2>
-      <p>Starting creates a short-lived authorization receipt and invokes GNOME’s visible screen recorder. Microphone, clipboard, and raw keystrokes stay off.</p>
+      <p>Starting creates a short-lived authorization receipt and invokes this computer’s supported screen recorder. Microphone, clipboard, and raw keystrokes stay off.</p>
       <div className="capture-scope"><span><Check size={15} /> Screen and cursor</span><span><Check size={15} /> Local storage</span><span className="off">× Raw keystroke log</span></div>
       <button className="record-button" disabled={Boolean(busy)} onClick={() => void action("start")}><span /> {busy === "start" ? "Starting…" : "I’m ready — start recording"}</button>
     </div>

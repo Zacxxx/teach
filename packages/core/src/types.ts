@@ -11,6 +11,8 @@ export const teachStates = [
 export type TeachState = (typeof teachStates)[number];
 export type Replayability = "replayable" | "assist_only" | "unsupported" | "unknown";
 export type AlternativeVerification = "verified" | "testable" | "unverified";
+export type NativeRecordingBackend = "gnome" | "macos" | "windows";
+export type RecordingBackend = NativeRecordingBackend | "demo";
 
 export interface AuthorizationReceipt {
   id: string;
@@ -26,7 +28,7 @@ export interface AuthorizationReceipt {
 }
 
 export interface RecordingInfo {
-  backend: "gnome" | "demo";
+  backend: RecordingBackend;
   path: string;
   started_at: string;
   stopped_at?: string;

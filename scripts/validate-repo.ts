@@ -16,7 +16,12 @@ for (const relative of [
   "assets/icon.svg",
   "assets/logo.svg",
   "bin/teach-mcp",
+  "bin/teach-mcp.exe",
   "bin/teach-mcp-linux-x64.gz",
+  "bin/teach-mcp-linux-arm64.gz",
+  "bin/teach-mcp-darwin-x64.gz",
+  "bin/teach-mcp-darwin-arm64.gz",
+  "bin/teach-mcp-windows-x64.gz",
   "bin/teach-mcp.js",
   "skills/teach/SKILL.md",
   "skills/teach/agents/openai.yaml",
@@ -29,7 +34,7 @@ assert(skill.length < 20_000, "Teach skill should stay concise");
 
 const mcp = JSON.parse(await readFile(join(pluginRoot, ".mcp.json"), "utf8")) as { mcpServers?: Record<string, { command?: string; args?: string[] }> };
 const server = mcp.mcpServers?.["teach"];
-assert(server?.command === "./bin/teach-mcp", "MCP server must use the self-contained Linux executable");
+assert(server?.command === "./bin/teach-mcp", "MCP server must use the cross-platform self-contained launcher");
 assert(server.args?.length === 0, "MCP server must not require runtime package arguments");
 
 const mcpSource = await readFile(join(root, "packages", "mcp", "src", "index.ts"), "utf8");

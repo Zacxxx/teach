@@ -1,18 +1,27 @@
 #!/bin/sh
 set -eu
 
-case "$(uname -m)" in
-  x86_64|amd64) ;;
+system=$(uname -s)
+machine=$(uname -m)
+case "$system:$machine" in
+  Linux:x86_64|Linux:amd64) platform=linux-x64 ;;
+  Linux:aarch64|Linux:arm64) platform=linux-arm64 ;;
+  Darwin:x86_64|Darwin:amd64) platform=darwin-x64 ;;
+  Darwin:arm64|Darwin:aarch64) platform=darwin-arm64 ;;
   *)
-    echo "Teach currently supports Linux x86_64." >&2
+    echo "Teach does not include a runtime for $system/$machine." >&2
     exit 64
     ;;
 esac
 
 script_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-archive="$script_dir/teach-mcp-linux-x64.gz"
-cache_root=${XDG_CACHE_HOME:-"${HOME:?HOME is required}/.cache"}/teach/runtime
-runtime="$cache_root/teach-mcp-0.2.0-r4"
+archive="$script_dir/teach-mcp-$platform.gz"
+if [ "$system" = Darwin ]; then
+  cache_root="${HOME:?HOME is required}/Library/Caches/Teach/runtime"
+else
+  cache_root=${XDG_CACHE_HOME:-"${HOME:?HOME is required}/.cache"}/teach/runtime
+fi
+runtime="$cache_root/teach-mcp-0.3.0-r1-$platform"
 
 umask 077
 mkdir -p "$cache_root"

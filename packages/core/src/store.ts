@@ -25,9 +25,14 @@ const transitions: Record<TeachState, TeachState[]> = {
   failed: ["ready"],
 };
 
-export function teachHome(): string {
+export function teachHome(platform: NodeJS.Platform = process.platform): string {
   const configured = process.env.TEACH_HOME?.trim() || process.env.TEACH_GPT_HOME?.trim();
   if (configured) return configured;
+  if (platform === "win32") {
+    const localData = process.env.LOCALAPPDATA?.trim() || join(homedir(), "AppData", "Local");
+    return join(localData, "Teach");
+  }
+  if (platform === "darwin") return join(homedir(), "Library", "Application Support", "Teach");
   const dataHome = process.env.XDG_DATA_HOME?.trim() || join(homedir(), ".local", "share");
   const preferred = join(dataHome, "teach");
   const legacy = join(dataHome, "teach-gpt");

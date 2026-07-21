@@ -78,17 +78,23 @@ test("MCP server exposes the complete teaching lifecycle", async () => {
   }
 });
 
-test("packaged Linux backend starts without Bun or graphical environment variables", async () => {
+test("packaged backend starts without Bun or graphical environment variables", async () => {
   const home = await mkdtemp(join(tmpdir(), "teach-packaged-"));
   const packageRoot = resolve(dirname(dirname(fileURLToPath(import.meta.url))), "..", "..");
-  const executable = join(packageRoot, "plugins", "teach", "bin", "teach-mcp");
+  const executable = join(packageRoot, "plugins", "teach", "bin", process.platform === "win32" ? "teach-mcp.exe" : "teach-mcp");
+  const minimalPath = process.platform === "win32"
+    ? join(process.env.SystemRoot || "C:\\Windows", "System32")
+    : "/usr/bin:/bin";
+  const inherited = Object.fromEntries(Object.entries(process.env).filter((entry): entry is [string, string] => typeof entry[1] === "string"));
   const transport = new StdioClientTransport({
     command: executable,
     args: [],
     cwd: join(packageRoot, "plugins", "teach"),
     env: {
-      HOME: process.env.HOME || tmpdir(),
-      PATH: "/usr/bin:/bin",
+      ...inherited,
+      HOME: home,
+      LOCALAPPDATA: join(home, "cache"),
+      PATH: minimalPath,
       XDG_CACHE_HOME: join(home, "cache"),
       TEACH_HOME: home,
       TEACH_RECORDER: "demo",
