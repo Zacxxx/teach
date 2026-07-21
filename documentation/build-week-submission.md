@@ -1,7 +1,8 @@
 # OpenAI Build Week submission plan
 
-Live Devpost data was checked on 2026-07-21. Submissions close at
-**2026-07-22 00:00 UTC** (July 21, 5:00 PM Pacific).
+Live Devpost data and the final entry were checked on 2026-07-22. The project
+was submitted before the **2026-07-22 00:00 UTC** deadline (July 21, 5:00 PM
+Pacific).
 
 ## Positioning
 
@@ -24,14 +25,16 @@ Live Devpost data was checked on 2026-07-21. Submissions close at
 
 - [x] Public `https://github.com/Zacxxx/teach` repository with Apache-2.0 license.
 - [x] Fresh `make check` and `make demo` result.
-- [x] Devpost draft: `https://devpost.com/software/teach` (project 1357201).
-- [ ] Under-three-minute public or unlisted YouTube demo.
-- [ ] Voiceover explicitly covers the product, Codex, and GPT-5.6.
+- [x] Submitted Devpost entry: `https://devpost.com/software/teach-gpt`
+  (project 1357201, submission 1112097).
+- [x] 2:02 public YouTube demo: `https://youtu.be/1xKRY7CZj8A`.
+- [x] Voiceover explicitly covers the product, Codex, and GPT-5.6.
 - [x] `/feedback` Codex session ID from the main implementation task:
   `019f826b-60ea-7632-a9c6-30ab3724d963`.
-- [ ] Devpost description in a human voice.
+- [x] Final Devpost description edited for the current Teach identity and
+  cross-platform implementation.
 - [x] Plugin install steps, supported platforms, and deterministic test path.
-- [ ] Team members added and invitations accepted, if any.
+- [x] Submitted as an individual; no outstanding team invitations.
 
 ## Demo video outline
 
@@ -43,19 +46,19 @@ Live Devpost data was checked on 2026-07-21. Submissions close at
 6. **2:30-2:50 - Publish:** create the skill and invoke it from a new Codex task.
 7. **2:50-3:00 - Differentiation:** open source, Linux/macOS/Windows, local files, honest capability labels.
 
-## Devpost plugin handoff
+## Final Devpost record
 
-When implementation and video are ready:
+- **Project:** Teach (project 1357201)
+- **Submission:** 1112097
+- **State:** Submitted
+- **Category:** Work & Productivity
+- **Submitter:** Individual, France
+- **Repository:** `https://github.com/Zacxxx/teach`
+- **Video:** `https://youtu.be/1xKRY7CZj8A`
+- **Primary `/feedback` session:** `019f826b-60ea-7632-a9c6-30ab3724d963`
+- **Judge path:** deterministic `make demo`, full `make check`, packaged
+  `bun run eval`, and direct plugin installation without rebuilding.
 
-1. Call the Devpost plugin submission-requirements tool again for last-minute changes.
-2. Update the existing **Teach** draft (project 1357201) with the final
-   reviewed description and video URL. Its tagline, built-with values, and
-   repository URL are already populated.
-3. Fill fields 27945-27951, including France, Work & Productivity, repository,
-   `/feedback` session ID, and judge testing instructions.
-4. Submit through the plugin.
-5. Fetch the project again and verify the OpenAI Build Week relationship.
-6. Confirm the Devpost My Projects state is **Submitted**, not merely draft.
-
-Do not perform step 4 until the user has reviewed the final video URL,
-description, category, and session ID.
+The final entry uses the user-chosen **Teach** identity, the tagline “Show
+Codex once. Keep the skill.”, a branded widescreen thumbnail, current
+cross-platform copy, and explicit Record & Replay differentiation.

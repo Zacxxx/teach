@@ -8,8 +8,9 @@ Codex skill.
 
 This project was created for **OpenAI Build Week 2026** with Codex and GPT-5.6.
 
-[Watch the 2:02 Build Week demo](documentation/video/teach-build-week-demo.mp4),
-or inspect its [editable timeline, narration, and render recipe](documentation/video/README.md).
+[Watch the 2:02 Build Week demo on YouTube](https://youtu.be/1xKRY7CZj8A),
+view the [OpenAI Build Week submission](https://devpost.com/software/teach-gpt),
+or inspect the [local master, editable timeline, narration, and render recipe](documentation/video/README.md).
 
 ## Why it exists
 

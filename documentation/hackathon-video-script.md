@@ -4,6 +4,7 @@
 
 - **Master duration:** 2:02. Do not exceed 3:00.
 - **Format:** 16:9, 1080p minimum, 30 fps, public or unlisted YouTube.
+- **Final upload:** https://youtu.be/1xKRY7CZj8A
 - **Tone:** calm, direct, product-first. One sentence per breath.
 - **Core proof:** a real demonstration becomes an editable, capability-honest
   Codex skill inside one continuous recording.

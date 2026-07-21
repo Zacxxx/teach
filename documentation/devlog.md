@@ -228,6 +228,21 @@ master is now 2:02, carries no editorial overlay over product footage, and
 retains static imagery only for title, public repository proof, and the end
 card.
 
+## 2026-07-22 - OpenAI Build Week submission
+
+The final 2:02 live-product cut was uploaded publicly to YouTube at
+`https://youtu.be/1xKRY7CZj8A` and verified through its signed-out public URL.
+The Devpost draft was reconciled with the final product identity: **Teach**,
+cross-platform capture, the public `Zacxxx/teach` repository, Work &
+Productivity positioning, the deterministic judge path, and the primary
+`/feedback` session.
+
+Submission 1112097 was accepted with state **Submitted** before the deadline.
+The project page at `https://devpost.com/software/teach-gpt` also received the
+wide Teach title card as its thumbnail. The legacy Devpost slug remains
+`teach-gpt`, but the visible project name and all current product copy use
+**Teach**.
+
 ## Decision log
 
 | Decision | Why |
@@ -247,3 +262,4 @@ card.
 | Inherit Codex model by default | Avoid hard-coding a model slug that may not be enabled for the user's current authentication surface. |
 | Content-addressed runtime cache | Ensure every installed plugin archive executes its own bundled MCP runtime on every OS. |
 | Native-motion demo master | Demonstrate real timers, scrolling, editing, and publishing instead of animating screenshots. |
+| Keep the legacy Devpost slug | Preserve the accepted project URL while presenting the final Teach name everywhere visible. |

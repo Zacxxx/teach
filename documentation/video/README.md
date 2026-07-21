@@ -3,6 +3,10 @@
 This folder contains the editable sources and rendered master for the Teach
 hackathon video described in `../hackathon-video-script.md`.
 
+The final public upload is [Teach — OpenAI Build Week demo](https://youtu.be/1xKRY7CZj8A).
+It is also preserved here as `teach-build-week-demo.mp4` so the submitted cut
+remains reproducible from the public repository.
+
 ## What the footage represents
 
 The central walkthrough is a native 30 fps GNOME screen recording of the actual

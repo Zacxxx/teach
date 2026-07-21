@@ -178,3 +178,12 @@ This replaced the original screenshot-based assembly with a reproducible
 native recording of the live Teach component. The revised 2:02 timeline aligns
 each voice line with an actual UI state and keeps editorial copy off the product
 surface.
+
+## Final Build Week submission prompt - 2026-07-22
+
+> Use the uploaded YouTube demo to finish and polish the Devpost submission,
+> bring the public repository up to date, review the complete project for the
+> hackathon, and run `/review` one final time.
+
+This triggered the final live-requirements reconciliation, public submission,
+thumbnail and copy polish, repository link synchronization, and release review.
