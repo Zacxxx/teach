@@ -28,7 +28,7 @@ const server = new McpServer({
   version: "0.3.0",
   websiteUrl: "https://github.com/Zacxxx/teach",
 }, {
-  instructions: "When a user wants to teach a workflow, call teach_open immediately. The embedded Teach UI is the primary metadata, consent, recording, review, optimization, and publishing surface. Do not replace its buttons with prose questions unless the host cannot render MCP Apps UI. Never call teach_start before a separate explicit UI click or ready response.",
+  instructions: "When a user wants to teach a workflow, call teach_open immediately. If teach_open is present, the Teach server is available: never claim the panel is unavailable or ask for metadata in prose before calling it in the current turn. Prior task history and older failures are not evidence about the current panel. Use conversational fallback only after teach_open itself returns a current transport or rendering failure. The embedded Teach UI is the primary metadata, consent, recording, review, optimization, and publishing surface. Never call teach_start before a separate explicit UI click or ready response.",
 });
 
 const mutating = { readOnlyHint: false, destructiveHint: false, openWorldHint: false };

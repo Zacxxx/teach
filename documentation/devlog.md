@@ -128,6 +128,21 @@ and JSON-mode failure events take precedence over unrelated warnings. The
 retained real session was recovered in place and advanced to review with six
 learned steps; no recording or frames were discarded.
 
+## 2026-07-21 - Stale runtime and false fallback
+
+After reinstalling the recovered analyzer, a new invocation still used MCP
+processes extracted under the fixed `0.3.0-r4` runtime-cache key. The Codex
+plugin cache had updated correctly, but Teach's launcher treated an executable
+from the prior archive as current. In the same task, the model skipped the
+available `teach_open` tool and incorrectly announced a conversational fallback.
+
+POSIX launchers now derive the extracted executable name from the archive CRC
+and size; the Windows launcher uses a SHA-256 archive fingerprint. Any changed
+bundle therefore gets a new atomic extraction path without manual cache
+deletion. Skill, agent, and MCP-server instructions now make tool presence
+authoritative and permit conversational fallback only after a current
+`teach_open` transport or rendering failure.
+
 ## Decision log
 
 | Decision | Why |
@@ -145,3 +160,4 @@ learned steps; no recording or frames were discarded.
 | Standard MCP Apps `tools/call` | Keep the component portable across Codex and ChatGPT hosts. |
 | Single `teach` identity | Keep invocation, repository, packages, UI, and marketplace naming predictable. |
 | Inherit Codex model by default | Avoid hard-coding a model slug that may not be enabled for the user's current authentication surface. |
+| Content-addressed runtime cache | Ensure every installed plugin archive executes its own bundled MCP runtime on every OS. |

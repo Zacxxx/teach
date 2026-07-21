@@ -2,6 +2,8 @@ package main
 
 import (
 	"compress/gzip"
+	"crypto/sha256"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"io"
@@ -10,8 +12,6 @@ import (
 	"path/filepath"
 	"runtime"
 )
-
-const runtimeVersion = "0.3.0-r4"
 
 func main() {
 	if err := run(); err != nil {
@@ -33,12 +33,16 @@ func run() error {
 		return err
 	}
 	archive := filepath.Join(filepath.Dir(executable), "teach-mcp-windows-x64.gz")
+	fingerprint, err := archiveFingerprint(archive)
+	if err != nil {
+		return err
+	}
 	cache, err := os.UserCacheDir()
 	if err != nil {
 		return err
 	}
 	runtimeDir := filepath.Join(cache, "Teach", "runtime")
-	runtimePath := filepath.Join(runtimeDir, "teach-mcp-"+runtimeVersion+".exe")
+	runtimePath := filepath.Join(runtimeDir, "teach-mcp-"+fingerprint+".exe")
 	if _, err := os.Stat(runtimePath); errors.Is(err, os.ErrNotExist) {
 		if err := unpack(archive, runtimePath); err != nil {
 			return err
@@ -50,6 +54,19 @@ func run() error {
 	command.Stderr = os.Stderr
 	command.Env = os.Environ()
 	return command.Run()
+}
+
+func archiveFingerprint(archivePath string) (string, error) {
+	archive, err := os.Open(archivePath)
+	if err != nil {
+		return "", err
+	}
+	defer archive.Close()
+	hash := sha256.New()
+	if _, err := io.Copy(hash, archive); err != nil {
+		return "", err
+	}
+	return hex.EncodeToString(hash.Sum(nil)[:16]), nil
 }
 
 func unpack(archivePath, runtimePath string) error {

@@ -21,7 +21,9 @@ if [ "$system" = Darwin ]; then
 else
   cache_root=${XDG_CACHE_HOME:-"${HOME:?HOME is required}/.cache"}/teach/runtime
 fi
-runtime="$cache_root/teach-mcp-0.3.0-r4-$platform"
+set -- $(cksum "$archive")
+archive_fingerprint="$1-$2"
+runtime="$cache_root/teach-mcp-$archive_fingerprint-$platform"
 
 umask 077
 mkdir -p "$cache_root"

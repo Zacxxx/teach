@@ -1,11 +1,23 @@
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
 import assert from "node:assert/strict";
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
+
+test("packaged launchers key extracted runtimes by archive content", async () => {
+  const packageRoot = resolve(dirname(dirname(fileURLToPath(import.meta.url))), "..", "..");
+  const posix = await readFile(join(packageRoot, "plugins", "teach", "bin", "teach-mcp"), "utf8");
+  const windows = await readFile(join(packageRoot, "packages", "launcher", "main.go"), "utf8");
+  assert.match(posix, /cksum "\$archive"/);
+  assert.match(posix, /archive_fingerprint/);
+  assert.match(windows, /archiveFingerprint\(archive\)/);
+  assert.match(windows, /sha256\.New\(\)/);
+  assert.doesNotMatch(posix, /0\.3\.0-r\d/);
+  assert.doesNotMatch(windows, /runtimeVersion/);
+});
 
 test("MCP server exposes the complete teaching lifecycle", { timeout: 20_000 }, async () => {
   const home = await mkdtemp(join(tmpdir(), "teach-mcp-"));

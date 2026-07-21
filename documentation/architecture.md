@@ -24,7 +24,10 @@ component, MCP configuration, platform runtimes, manifest, and product assets.
 It does not hold user recordings. POSIX hosts select a compressed runtime by
 `uname`; Windows resolves the same extensionless MCP command to a small
 `teach-mcp.exe` launcher. First use expands the matching versioned runtime into
-the user's cache with private permissions.
+the user's cache with private permissions. The extracted filename is derived
+from the bundled archive content (POSIX checksum or Windows SHA-256), so a
+cache-busted plugin can never silently reuse an executable from an older
+archive.
 
 ### `packages/core`
 

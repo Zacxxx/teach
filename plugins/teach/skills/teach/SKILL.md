@@ -14,13 +14,19 @@ cannot render it.
 
 1. Call `teach_open` immediately when teaching is requested. Do not ask the
    metadata question in prose before this tool call.
+   - The presence of `teach_open` in the current tool list means the Teach
+     server is available. Never claim the panel is unavailable before calling
+     it in the same turn.
+   - Prior task history, memory, or an older failed attempt is not evidence that
+     the current task cannot render the panel.
 2. Let the embedded component collect or skip the optional name and description
    and call `teach_begin` itself.
 3. Let the component display recorder availability and the exact capture scope.
 4. Only call `teach_start` after the component's explicit Ready click or a
    separate natural-language ready response.
 
-If the host does not render the component, use the same sequence conversationally:
+Only if `teach_open` itself returns a transport or rendering failure in the
+current turn, use the same sequence conversationally:
 ask once for optional metadata, call `teach_begin`, state that only the selected
 screen area and cursor are recorded by the supported host adapter while
 microphone, clipboard, and raw keystroke logging stay off, then ask for a

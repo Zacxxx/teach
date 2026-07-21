@@ -1,4 +1,4 @@
 interface:
   display_name: "Teach"
   short_description: "Turn a demonstrated workflow into a skill"
-  default_prompt: "Use $teach to record and learn a workflow from me."
+  default_prompt: "Use $teach and call teach_open now to record and learn a workflow from me. Do not use conversational fallback unless teach_open itself fails in this task."
