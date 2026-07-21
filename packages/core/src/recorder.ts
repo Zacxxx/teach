@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdir, readFile, rm, stat } from "node:fs/promises";
 import { join } from "node:path";
+import { abortGnomeRecorder, armGnomeRecorder, startGnomeRecorder, stopGnomeRecorder } from "./gnome-recorder.ts";
 import { getSession, sessionDir, teachHome, transitionSession, updateSession, writeJsonAtomic } from "./store.ts";
 import type { AuthorizationReceipt, TeachSession } from "./types.ts";
 
@@ -19,6 +20,11 @@ export async function markReady(id: string): Promise<TeachSession> {
   const current = await getSession(id);
   if (current.state === "ready") {
     return updateSession(id, "recording_authorization_refreshed", (session) => {
+      session.authorization = receipt;
+    });
+  }
+  if (current.state === "failed") {
+    return transitionSession(id, "ready", "recording_authorized", (session) => {
       session.authorization = receipt;
     });
   }
@@ -62,8 +68,11 @@ export function probeRecordingSupport(): RecorderSupport {
     "--dest", "org.gnome.Shell.Screencast",
     "--object-path", "/org/gnome/Shell/Screencast",
   ], { encoding: "utf8", env });
-  const output = `${result.stdout || ""} ${result.stderr || ""}`;
-  const supported = result.status === 0 && /ScreencastSupported\s*=\s*true/.test(output);
+  const helper = spawnSync("gjs", ["--version"], { encoding: "utf8", env });
+  const output = `${result.stdout || ""} ${result.stderr || ""} ${helper.stderr || ""}`;
+  const supported = result.status === 0
+    && helper.status === 0
+    && /ScreencastSupported\s*=\s*true/.test(output);
   return {
     backend: "gnome",
     supported,
@@ -81,22 +90,34 @@ export async function startRecording(id: string): Promise<TeachSession> {
   await assertNoActiveRecording();
   const requested = process.env.TEACH_GPT_RECORDER?.toLowerCase() || "auto";
   const backend = requested === "demo" ? "demo" : "gnome";
-  const path = join(sessionDir(id), "recording.webm");
+  let path = join(sessionDir(id), "recording.webm");
 
-  if (backend === "demo") {
-    await generateDemoRecording(path);
-  } else {
-    startGnomeRecording(path);
+  try {
+    if (backend === "demo") {
+      await generateDemoRecording(path);
+    } else {
+      const requestedPath = join(sessionDir(id), `recording-${Date.now()}`);
+      path = await startGnomeRecorder(id, requestedPath, graphicalSessionEnvironment(), async (message) => {
+        await abortGnomeRecorder(id);
+        await markRecordingFailed(id, "native_recorder_failed", message);
+      });
+    }
+
+    await writeJsonAtomic(activePath(), { session_id: id, backend, path });
+    const recording = await transitionSession(id, "recording", "recording_started", (current) => {
+      current.recording = {
+        backend,
+        path,
+        started_at: new Date().toISOString(),
+      };
+    }, { backend });
+    if (backend === "gnome") armGnomeRecorder(id);
+    return recording;
+  } catch (error) {
+    if (backend === "gnome") await abortGnomeRecorder(id);
+    await clearActiveRecording(id);
+    throw error;
   }
-
-  await writeJsonAtomic(activePath(), { session_id: id, backend, path });
-  return transitionSession(id, "recording", "recording_started", (current) => {
-    current.recording = {
-      backend,
-      path,
-      started_at: new Date().toISOString(),
-    };
-  }, { backend });
 }
 
 export async function stopRecording(id: string): Promise<TeachSession> {
@@ -104,19 +125,36 @@ export async function stopRecording(id: string): Promise<TeachSession> {
   if (session.state !== "recording" || !session.recording) throw new Error("recording_not_active");
   const active = JSON.parse(await readFile(activePath(), "utf8")) as { session_id: string; backend: string };
   if (active.session_id !== id) throw new Error("another_session_is_recording");
-  if (session.recording.backend === "gnome") stopGnomeRecording();
-  await waitForFile(session.recording.path);
-  const stoppedAt = new Date().toISOString();
-  const durationMs = Math.max(0, Date.parse(stoppedAt) - Date.parse(session.recording.started_at));
-  const frameResult = extractFrames(session.recording.path, join(sessionDir(id), "frames"));
-  await rm(activePath(), { force: true });
-  return transitionSession(id, "processing", "recording_stopped", (current) => {
-    if (!current.recording) return;
-    current.recording.stopped_at = stoppedAt;
-    current.recording.duration_ms = durationMs;
-    current.recording.frames_dir = frameResult.directory;
-    current.recording.frame_count = frameResult.count;
-  }, { duration_ms: durationMs, frame_count: frameResult.count });
+  try {
+    if (session.recording.backend === "gnome") await stopGnomeRecorder(id);
+    await waitForFile(session.recording.path);
+    validateRecording(session.recording.path);
+    const stoppedAt = new Date().toISOString();
+    const durationMs = Math.max(0, Date.parse(stoppedAt) - Date.parse(session.recording.started_at));
+    const frameResult = extractFrames(session.recording.path, join(sessionDir(id), "frames"));
+    await clearActiveRecording(id);
+    return transitionSession(id, "processing", "recording_stopped", (current) => {
+      if (!current.recording) return;
+      current.recording.stopped_at = stoppedAt;
+      current.recording.duration_ms = durationMs;
+      current.recording.frames_dir = frameResult.directory;
+      current.recording.frame_count = frameResult.count;
+    }, { duration_ms: durationMs, frame_count: frameResult.count });
+  } catch (error) {
+    if (session.recording.backend === "gnome") await abortGnomeRecorder(id);
+    await markRecordingFailed(id, "recording_finalize_failed", errorMessage(error));
+    throw error;
+  }
+}
+
+export async function markRecordingFailed(id: string, code: string, message: string): Promise<TeachSession> {
+  await clearActiveRecording(id);
+  const session = await getSession(id);
+  if (session.state === "failed") return session;
+  if (session.state !== "recording") return session;
+  return transitionSession(id, "failed", "recording_failed", (current) => {
+    current.failure = { code: sanitize(code), message: sanitize(message), at: new Date().toISOString() };
+  }, { code: sanitize(code) });
 }
 
 async function assertNoActiveRecording(): Promise<void> {
@@ -128,44 +166,6 @@ async function assertNoActiveRecording(): Promise<void> {
   }
 }
 
-function startGnomeRecording(path: string): void {
-  const support = probeRecordingSupport();
-  if (!support.supported) throw new Error(`gnome_recording_unavailable:${support.detail}`);
-  const env = graphicalSessionEnvironment();
-  const result = spawnSync("gdbus", [
-    "call",
-    "--address", env.DBUS_SESSION_BUS_ADDRESS!,
-    "--dest",
-    "org.gnome.Shell.Screencast",
-    "--object-path",
-    "/org/gnome/Shell/Screencast",
-    "--method",
-    "org.gnome.Shell.Screencast.Screencast",
-    path,
-    "{'framerate': <30>, 'draw-cursor': <true>}",
-  ], { encoding: "utf8", env });
-  if (result.status !== 0 || !result.stdout.includes("true")) {
-    throw new Error(`gnome_recording_failed:${sanitize(result.stderr || result.stdout)}`);
-  }
-}
-
-function stopGnomeRecording(): void {
-  const env = graphicalSessionEnvironment();
-  const result = spawnSync("gdbus", [
-    "call",
-    "--address", env.DBUS_SESSION_BUS_ADDRESS!,
-    "--dest",
-    "org.gnome.Shell.Screencast",
-    "--object-path",
-    "/org/gnome/Shell/Screencast",
-    "--method",
-    "org.gnome.Shell.Screencast.StopScreencast",
-  ], { encoding: "utf8", env });
-  if (result.status !== 0 || !result.stdout.includes("true")) {
-    throw new Error(`gnome_stop_failed:${sanitize(result.stderr || result.stdout)}`);
-  }
-}
-
 async function generateDemoRecording(path: string): Promise<void> {
   await mkdir(join(path, ".."), { recursive: true, mode: 0o700 });
   const result = spawnSync("ffmpeg", [
@@ -174,6 +174,28 @@ async function generateDemoRecording(path: string): Promise<void> {
     "-t", "3", "-c:v", "libvpx-vp9", "-pix_fmt", "yuv420p", path,
   ], { encoding: "utf8" });
   if (result.status !== 0) throw new Error(`demo_recording_failed:${sanitize(result.stderr)}`);
+}
+
+function validateRecording(path: string): void {
+  const result = spawnSync("ffprobe", [
+    "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=codec_type", "-of", "csv=p=0", path,
+  ], { encoding: "utf8" });
+  if (result.status !== 0 || !result.stdout.includes("video")) {
+    throw new Error(`recording_invalid:${sanitize(result.stderr || result.stdout)}`);
+  }
+}
+
+async function clearActiveRecording(id: string): Promise<void> {
+  try {
+    const active = JSON.parse(await readFile(activePath(), "utf8")) as { session_id: string };
+    if (active.session_id === id) await rm(activePath(), { force: true });
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
 }
 
 function extractFrames(recording: string, directory: string): { directory: string; count: number } {

@@ -17,7 +17,7 @@ import type { BeginInput, TeachEvent, TeachSession, TeachState } from "./types.t
 const transitions: Record<TeachState, TeachState[]> = {
   draft: ["ready"],
   ready: ["recording"],
-  recording: ["processing"],
+  recording: ["processing", "failed"],
   processing: ["review", "failed"],
   review: ["processing", "published"],
   published: [],

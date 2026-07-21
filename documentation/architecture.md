@@ -57,6 +57,7 @@ stateDiagram-v2
     draft --> ready
     ready --> recording
     recording --> processing
+    recording --> failed
     processing --> review
     processing --> failed
     review --> processing: reanalyze or optimize
@@ -71,10 +72,13 @@ idempotency key in the event log.
 
 The GNOME adapter discovers the current user's D-Bus socket from the operating
 system rather than relying on graphical environment variables inherited by the
-sandboxed plugin process. It calls `org.gnome.Shell.Screencast`, which displays the native
-desktop recording indicator. Stop calls `StopScreencast`; `ffmpeg` then samples
-bounded frames. The adapter does not register a keyboard event listener. A demo
-adapter creates a synthetic clip for tests and judging.
+sandboxed plugin process. A small GNOME-native helper owns one persistent D-Bus
+sender while it calls `org.gnome.Shell.Screencast`, holds capture open, and
+handles `StopScreencast`. This is required because GNOME ends capture when the
+calling sender vanishes. The adapter persists GNOME's actual output filename,
+validates the finalized video with `ffprobe`, and only then asks `ffmpeg` to
+sample bounded frames. The adapter does not register a keyboard event listener.
+A demo adapter creates a synthetic clip for tests and judging.
 
 Future adapters implement the same start/stop contract for KDE/Portal, wlroots,
 and macOS without changing analysis or storage.

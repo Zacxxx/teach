@@ -10,6 +10,7 @@ import {
   discoverSessionBusAddress,
   getSession,
   markReady,
+  markRecordingFailed,
   publishSkill,
   startRecording,
   stopRecording,
@@ -71,6 +72,26 @@ test("recording cannot start before a separate authorization transition", async 
     const session = await createSession();
     await assert.rejects(startRecording(session.id), /recording_not_authorized/);
     assert.equal((await getSession(session.id)).state, "draft");
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("a failed capture is recoverable without leaving the global recording lock", { timeout: 12_000 }, async () => {
+  const root = await mkdtemp(join(tmpdir(), "teach-gpt-test-"));
+  process.env.TEACH_GPT_HOME = root;
+  process.env.TEACH_GPT_RECORDER = "demo";
+  try {
+    const session = await createSession();
+    await markReady(session.id);
+    await startRecording(session.id);
+    const failed = await markRecordingFailed(session.id, "test_failure", "The test recorder stopped.");
+    assert.equal(failed.state, "failed");
+    assert.equal(failed.failure?.code, "test_failure");
+
+    await markReady(session.id);
+    assert.equal((await startRecording(session.id)).state, "recording");
+    assert.equal((await stopRecording(session.id)).state, "processing");
   } finally {
     await rm(root, { recursive: true, force: true });
   }
