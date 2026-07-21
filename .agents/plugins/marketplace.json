@@ -1,0 +1,20 @@
+{
+  "name": "teach-gpt",
+  "interface": {
+    "displayName": "Teach GPT"
+  },
+  "plugins": [
+    {
+      "name": "teach-gpt",
+      "source": {
+        "source": "local",
+        "path": "./plugins/teach-gpt"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}
