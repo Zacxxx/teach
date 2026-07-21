@@ -8,18 +8,30 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
   <title>Teach GPT</title>
   <style>
     :root {
-      color-scheme: light dark;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --ink: var(--color-text-primary, #211f26);
-      --muted: var(--color-text-secondary, #6d6874);
-      --surface: var(--color-background-primary, #fffdf8);
-      --soft: var(--color-background-secondary, #f5f0ff);
-      --line: var(--color-border-secondary, rgba(45, 35, 60, .14));
+      color-scheme: light;
+      font-family: var(--font-sans, ui-rounded, "SF Pro Rounded", "Segoe UI", system-ui, sans-serif);
+      --fallback-ink: #0d0d0d;
+      --fallback-muted: #666;
+      --fallback-surface: #fff;
+      --fallback-soft: #f7f7f8;
+      --fallback-line: rgba(13, 13, 13, .12);
+      --ink: var(--color-text-primary, var(--fallback-ink));
+      --muted: var(--color-text-secondary, var(--fallback-muted));
+      --surface: var(--color-background-primary, var(--fallback-surface));
+      --soft: var(--color-background-secondary, var(--fallback-soft));
+      --line: var(--color-border-secondary, var(--fallback-line));
       --violet: #6d5ef8;
       --violet-dark: #5545df;
-      --coral: #ff705b;
       --green: #157f5b;
       --red: #c43d43;
+    }
+    :root[data-theme="dark"] {
+      color-scheme: dark;
+      --fallback-ink: #f2f2f2;
+      --fallback-muted: #aaa;
+      --fallback-surface: #171717;
+      --fallback-soft: #212121;
+      --fallback-line: rgba(255, 255, 255, .13);
     }
     * { box-sizing: border-box; }
     body { margin: 0; padding: 12px; color: var(--ink); background: transparent; }
@@ -29,17 +41,16 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
       max-width: 760px;
       margin: 0 auto;
       border: 1px solid var(--line);
-      border-radius: 22px;
+      border-radius: var(--border-radius-xl, 22px);
       background: var(--surface);
-      box-shadow: 0 16px 42px rgba(32, 23, 47, .08);
+      box-shadow: var(--shadow-md, 0 16px 42px rgba(0, 0, 0, .08));
     }
-    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
+    header { display: flex; align-items: center; gap: 16px; padding: 18px 20px; border-bottom: 1px solid var(--line); }
     .brand { display: flex; align-items: center; gap: 11px; font-weight: 760; letter-spacing: -.02em; }
-    .mark { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; color: white; background: linear-gradient(145deg, var(--violet), #8a72ff); box-shadow: inset 0 -1px 0 rgba(0,0,0,.16); }
-    .privacy { color: var(--muted); font-size: 12px; }
+    .brand-mark { display: block; width: 34px; height: 34px; flex: 0 0 auto; }
     main { display: grid; gap: 18px; padding: 22px; }
     .eyebrow { margin: 0 0 7px; color: var(--violet); font-size: 11px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
-    h1 { margin: 0; font-family: ui-serif, Georgia, serif; font-size: clamp(25px, 5vw, 38px); font-weight: 520; line-height: 1.08; letter-spacing: -.035em; }
+    h1 { margin: 0; font-family: inherit; font-size: clamp(25px, 5vw, 37px); font-weight: var(--font-weight-semibold, 620); line-height: 1.12; letter-spacing: -.035em; }
     h2 { margin: 0; font-size: 17px; letter-spacing: -.015em; }
     p { margin: 0; color: var(--muted); line-height: 1.55; }
     .stack { display: grid; gap: 13px; }
@@ -66,6 +77,8 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
     .status strong { display: block; font-size: 13px; }
     .status small { display: block; margin-top: 2px; color: var(--muted); line-height: 1.4; }
     .error { padding: 12px 13px; border: 1px solid rgba(196,61,67,.28); border-radius: 12px; color: var(--red); background: rgba(196,61,67,.08); font-size: 13px; line-height: 1.45; }
+    .error strong, .error span { display: block; }
+    .error span { margin-top: 2px; }
     .recording-panel { padding: 22px; border-radius: 18px; color: white; background: linear-gradient(135deg, #2b2232, #4a2c46); }
     .recording-panel p { color: rgba(255,255,255,.72); }
     .timer { margin: 9px 0 17px; font-variant-numeric: tabular-nums; font-size: 42px; font-weight: 760; letter-spacing: -.04em; }
@@ -76,7 +89,6 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
     .step p { margin-top: 3px; font-size: 12px; }
     .pill { display: inline-flex; align-items: center; width: fit-content; padding: 5px 9px; border-radius: 999px; color: var(--violet-dark); background: rgba(109,94,248,.12); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; }
     .busy { pointer-events: none; opacity: .66; }
-    footer { padding: 12px 20px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
     @keyframes pulse { 50% { transform: scale(.82); opacity: .62; } }
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
   </style>
@@ -84,11 +96,16 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
 <body>
   <section class="shell" aria-label="Teach GPT workflow controls">
     <header>
-      <div class="brand"><span class="mark">T</span><span>Teach GPT</span></div>
-      <span class="privacy">Visible capture · local artifacts</span>
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+          <rect width="64" height="64" rx="16" fill="#6D5EF8" />
+          <path d="M17 20h30M32 20v28M21 34h22" stroke="white" stroke-width="6" stroke-linecap="round" />
+          <circle cx="46" cy="46" r="8" fill="#FF6B5F" stroke="white" stroke-width="3" />
+        </svg>
+        <span>Teach GPT</span>
+      </div>
     </header>
     <main id="app" aria-live="polite"></main>
-    <footer>Microphone, clipboard, and raw keystroke logging remain off.</footer>
   </section>
   <script type="module">
     const app = document.querySelector("#app");
@@ -96,6 +113,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
     let errorMessage = "";
     let busy = false;
     let rpcId = 0;
+    let hostContext = {};
     const pending = new Map();
 
     function escapeHtml(value) {
@@ -120,12 +138,49 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
       window.parent.postMessage({ jsonrpc: "2.0", method, params }, "*");
     }
 
+    function applyHostContext(next = {}) {
+      hostContext = {
+        ...hostContext,
+        ...next,
+        styles: {
+          ...(hostContext.styles || {}),
+          ...(next.styles || {}),
+          variables: {
+            ...(hostContext.styles?.variables || {}),
+            ...(next.styles?.variables || {})
+          }
+        }
+      };
+      const root = document.documentElement;
+      const fallbackTheme = window.matchMedia?.("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      const theme = hostContext.theme || window.openai?.theme || fallbackTheme;
+      root.dataset.theme = theme;
+      root.style.colorScheme = theme;
+      for (const [name, value] of Object.entries(hostContext.styles?.variables || {})) {
+        if (name.startsWith("--") && typeof value === "string") root.style.setProperty(name, value);
+      }
+      const fontCss = hostContext.styles?.css?.fonts;
+      if (fontCss && !document.querySelector("#teach-host-fonts")) {
+        const style = document.createElement("style");
+        style.id = "teach-host-fonts";
+        style.textContent = fontCss;
+        document.head.append(style);
+      }
+    }
+
+    applyHostContext();
+    const colorScheme = window.matchMedia?.("(prefers-color-scheme: dark)");
+    colorScheme?.addEventListener?.("change", () => {
+      if (!hostContext.theme) applyHostContext();
+    });
+
     async function initialize() {
-      await request("ui/initialize", {
+      const initialized = await request("ui/initialize", {
         appInfo: { name: "teach-gpt-widget", version: "0.2.0" },
         appCapabilities: {},
         protocolVersion: "2026-01-26"
       });
+      applyHostContext(initialized?.hostContext || {});
       notify("ui/notifications/initialized", {});
     }
 
@@ -141,22 +196,22 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
       return response?.structuredContent ?? response?.result?.structuredContent ?? response ?? data;
     }
 
-    function recorderStatus() {
+    function recorderProblem() {
       const recorder = data?.recorder;
-      if (!recorder) return "";
-      return '<div class="status"><span class="dot"></span><div><strong>' +
-        escapeHtml(recorder.label) + '</strong><small>' + escapeHtml(recorder.detail) + '</small></div></div>';
+      if (!recorder || recorder.supported) return "";
+      return '<div class="error" role="alert"><strong>' +
+        escapeHtml(recorder.label) + '</strong><span>' + escapeHtml(recorder.detail) + '</span></div>';
     }
 
     function setupView() {
       return '<div class="stack">' +
-        '<div><p class="eyebrow">New teaching</p><h1>What will you show Codex?</h1></div>' +
+        '<div><h1>What do you want to teach</h1></div>' +
         '<p>Name and description are optional. You can skip them and let GPT-5.6 propose both after the recording.</p>' +
-        recorderStatus() +
+        recorderProblem() +
         '<label>Name <input id="name" maxlength="80" placeholder="e.g. Prepare the weekly handoff" /></label>' +
         '<label>Description <textarea id="description" maxlength="500" placeholder="What output should remain the same?"></textarea></label>' +
-        '<div class="actions"><button class="primary" data-action="begin">Create teaching</button>' +
-        '<button class="secondary" data-action="skip">Skip both</button></div></div>';
+        '<div class="actions"><button class="primary" data-action="begin">Continue</button>' +
+        '<button class="secondary" data-action="skip">Skip</button></div></div>';
     }
 
     function consentView(session) {
@@ -164,11 +219,10 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
       return '<div class="stack">' +
         '<div><p class="eyebrow">Ready when you are</p><h1>' + escapeHtml(session.name || "Untitled workflow") + '</h1></div>' +
         '<p>Starting creates a short-lived authorization receipt, then invokes GNOME’s visible native recorder.</p>' +
-        recorderStatus() +
+        recorderProblem() +
         '<div class="grid">' +
-        '<div class="card"><strong>Recorded</strong><span>Selected screen and cursor</span></div>' +
+        '<div class="card"><strong>Recorded</strong><span>Screen and pointer only</span></div>' +
         '<div class="card"><strong>Stored locally</strong><span>Private session directory</span></div>' +
-        '<div class="card"><strong>Not collected</strong><span>Mic, clipboard, raw keys</span></div>' +
         '</div><div class="actions"><button class="primary" data-action="start" ' + (unsupported ? 'disabled' : '') + '>I’m ready — start recording</button></div></div>';
     }
 
@@ -298,6 +352,8 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
         data = message.params?.structuredContent ?? data;
         errorMessage = "";
         render();
+      } else if (message.method === "ui/notifications/host-context-changed") {
+        applyHostContext(message.params || {});
       }
     }, { passive: true });
 

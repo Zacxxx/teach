@@ -1,6 +1,7 @@
 import { TEACH_WIDGET_HTML } from "../packages/mcp/src/widget.ts";
 
 const port = Number(process.env.TEACH_GPT_WIDGET_PORT || 3142);
+const widgetSource = JSON.stringify(TEACH_WIDGET_HTML).replace(/<\//g, "<\\/");
 
 const preview = `<!doctype html>
 <html lang="en">
@@ -17,7 +18,24 @@ const preview = `<!doctype html>
   <iframe id="widget" title="Teach GPT MCP Apps preview"></iframe>
   <script>
     const frame = document.querySelector("#widget");
-    frame.srcdoc = ${JSON.stringify(TEACH_WIDGET_HTML)};
+    frame.srcdoc = ${widgetSource};
+    const requestedTheme = new URLSearchParams(location.search).get("theme");
+    const theme = requestedTheme === "light" || requestedTheme === "dark"
+      ? requestedTheme
+      : (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const variables = theme === "dark" ? {
+      "--color-background-primary": "#171717",
+      "--color-background-secondary": "#212121",
+      "--color-text-primary": "#f2f2f2",
+      "--color-text-secondary": "#a8a8a8",
+      "--color-border-secondary": "rgba(255,255,255,.13)"
+    } : {
+      "--color-background-primary": "#ffffff",
+      "--color-background-secondary": "#f7f7f8",
+      "--color-text-primary": "#0d0d0d",
+      "--color-text-secondary": "#666666",
+      "--color-border-secondary": "rgba(13,13,13,.12)"
+    };
     let session = null;
     const analysis = {
       name: "Prepare the weekly handoff",
@@ -38,14 +56,18 @@ const preview = `<!doctype html>
       label: "GNOME Wayland screen recorder",
       detail: "Native GNOME capture is available. No Codex relaunch or exported display variables are required."
     };
-    const reply = (id, structuredContent) => frame.contentWindow.postMessage({
-      jsonrpc: "2.0", id, result: { structuredContent }
-    }, "*");
+    const replyRaw = (id, result) => frame.contentWindow.postMessage({ jsonrpc: "2.0", id, result }, "*");
+    const reply = (id, structuredContent) => replyRaw(id, { structuredContent });
     window.addEventListener("message", (event) => {
       if (event.source !== frame.contentWindow) return;
       const message = event.data;
       if (!message || message.jsonrpc !== "2.0" || message.id == null) return;
-      if (message.method === "ui/initialize") return reply(message.id, {});
+      if (message.method === "ui/initialize") return replyRaw(message.id, {
+        protocolVersion: "2026-01-26",
+        hostInfo: { name: "teach-gpt-preview", version: "0.2.0" },
+        hostCapabilities: {},
+        hostContext: { theme, styles: { variables } }
+      });
       if (message.method !== "tools/call") return reply(message.id, {});
       const name = message.params?.name;
       const args = message.params?.arguments || {};

@@ -38,9 +38,20 @@ test("MCP server exposes the complete teaching lifecycle", async () => {
     const resources = await client.listResources();
     assert.ok(resources.resources.some((resource) => resource.uri === "ui://teach-gpt/workflow-v2.html"));
     const widget = await client.readResource({ uri: "ui://teach-gpt/workflow-v2.html" });
-    assert.match(JSON.stringify(widget), /text\/html;profile=mcp-app/);
-    assert.match(JSON.stringify(widget), /I’m ready — start recording/);
-    assert.match(JSON.stringify(widget), /End recording/);
+    const widgetText = JSON.stringify(widget);
+    assert.match(widgetText, /text\/html;profile=mcp-app/);
+    assert.match(widgetText, /What do you want to teach/);
+    assert.match(widgetText, />Continue</);
+    assert.match(widgetText, />Skip</);
+    assert.match(widgetText, /I’m ready — start recording/);
+    assert.match(widgetText, /End recording/);
+    assert.match(widgetText, /brand-mark/);
+    assert.match(widgetText, /host-context-changed/);
+    assert.match(widgetText, /color-background-primary/);
+    assert.doesNotMatch(widgetText, /Visible capture · local artifacts/);
+    assert.doesNotMatch(widgetText, /New teaching/);
+    assert.doesNotMatch(widgetText, /What will you show Codex/);
+    assert.doesNotMatch(widgetText, /<footer>/);
 
     const opened = await client.callTool({ name: "teach_open", arguments: {} });
     assert.equal(opened.isError, undefined);

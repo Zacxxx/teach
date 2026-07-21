@@ -1,6 +1,6 @@
 {
   "name": "teach-gpt",
-  "version": "0.2.0+codex.20260721034435",
+  "version": "0.2.0+codex.20260721114734",
   "description": "Record a Linux workflow through native embedded controls, analyze it with GPT-5.6, review its process labels, and publish it as a reusable Codex skill.",
   "author": {
     "name": "Zacxxx Pinson-Tilche",
