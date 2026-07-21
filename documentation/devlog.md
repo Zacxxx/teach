@@ -53,6 +53,20 @@ variables. A compressed, self-extracting Linux x86_64 runtime ships inside the
 plugin, eliminating the installed-user Bun/package-install dependency. Protocol
 tests execute that packaged wrapper with a deliberately minimal environment.
 
+## 2026-07-21 - Native visual refinement
+
+The first embedded panel proved the lifecycle but rendered as a light cream card
+inside dark Codex and repeated technical recorder status that was not useful on
+the setup step. The component now consumes the MCP Apps host theme, design
+tokens, and font CSS, listens for live host-context changes, uses the product
+mark in its header, and simplifies setup copy and actions. Recorder errors stay
+visible when action is required; successful platform probing stays out of the way.
+
+Clipboard and raw-keystroke collection remain excluded because either can
+capture secrets or document bodies. Microphone narration is reserved for a
+separate explicit-consent implementation with native permission and analysis
+support; the UI does not advertise a control that the recorder cannot honor.
+
 ## Decision log
 
 | Decision | Why |

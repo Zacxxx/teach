@@ -34,6 +34,18 @@ recording, storage, and capabilities Codex does not natively provide.
 This feedback led to the embedded MCP Apps interface, self-contained Linux
 runtime, and recorder session-bus discovery work documented in the devlog.
 
+## Embedded UI refinement prompt - 2026-07-21
+
+> Remove the setup eyebrow, visible-capture label, successful GNOME recorder
+> status, and footer. Rename the heading to “What do you want to teach,” use
+> Continue and Skip, follow native Codex light and dark themes, use the app logo,
+> and choose a simpler, rounder OpenAI-like font combination. Consider optional
+> microphone, clipboard, and keystroke capture.
+
+The safe implementation keeps screen capture explicit, reserves microphone
+narration for a real permission-aware pipeline, and continues to reject raw
+clipboard and keystroke logging.
+
 ## Runtime recording-analysis prompt
 
 The analyzer receives this template together with `session.json`, sampled

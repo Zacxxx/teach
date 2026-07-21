@@ -70,7 +70,11 @@ publicly documented behavior and Corridor-derived governance principles.
 
 ## Visual language
 
-- Warm off-white background, ink text, and electric violet as the teaching accent.
+- Codex host background, text, border, radius, shadow, and font tokens define the component.
+- Light and dark themes update from MCP Apps host context without reloading the teaching flow.
+- A simple rounded host sans-serif stack replaces the earlier editorial serif heading.
+- The Teach GPT product mark appears in the component header.
+- Electric violet remains the teaching accent where the host has no semantic accent token.
 - Red is reserved for active capture and destructive deletion.
 - Large state typography makes recording status readable at a glance.
 - Cards use generous spacing and subtle borders rather than dashboard chrome.
@@ -92,3 +96,8 @@ optimization, and publishing remain visible in one panel. Natural-language
 commands remain available, but they are a parallel control path rather than a
 replacement for buttons. If a host cannot render MCP Apps, the Teach skill
 falls back to the same lifecycle through explicit conversational prompts.
+
+The component consumes `hostContext.theme`, `hostContext.styles.variables`, and
+host-provided font CSS at initialization, then responds to
+`ui/notifications/host-context-changed`. System color-scheme detection remains
+only as a fallback for hosts that do not provide MCP Apps style context.
