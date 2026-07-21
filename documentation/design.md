@@ -2,7 +2,7 @@
 
 ## Product promise
 
-Teach GPT turns “show me once” into a transparent, editable Codex skill. The
+Teach turns “show me once” into a transparent, editable Codex skill. The
 user remains the author: the model drafts a process representation, but it does
 not silently publish, replay, or broaden what was recorded.
 
@@ -50,9 +50,9 @@ are displayed separately and never replace the reviewed process.
 ## Differentiation from OpenAI Record & Replay
 
 OpenAI Record & Replay is the closest product reference and validates the core
-interaction. Teach GPT differentiates through:
+interaction. Teach differentiates through:
 
-| Dimension | Teach GPT v0.2 |
+| Dimension | Teach v0.2 |
 | --- | --- |
 | Source | Apache-2.0, self-hostable |
 | Platform | Linux/GNOME Wayland first |
@@ -64,7 +64,7 @@ interaction. Teach GPT differentiates through:
 | UX | Embedded Codex controls via MCP Apps; optional development dashboard |
 | Extensibility | Recorder adapters and portable Codex skills |
 
-Teach GPT does not copy or claim compatibility with the private implementation
+Teach does not copy or claim compatibility with the private implementation
 of Record & Replay. It implements the user-visible idea independently from
 publicly documented behavior and Corridor-derived governance principles.
 
@@ -73,7 +73,7 @@ publicly documented behavior and Corridor-derived governance principles.
 - Codex host background, text, border, radius, shadow, and font tokens define the component.
 - Light and dark themes update from MCP Apps host context without reloading the teaching flow.
 - A simple rounded host sans-serif stack replaces the earlier editorial serif heading.
-- The Teach GPT product mark appears in the component header.
+- The Teach product mark appears in the component header.
 - Electric violet remains the teaching accent where the host has no semantic accent token.
 - Red is reserved for active capture and destructive deletion.
 - Large state typography makes recording status readable at a glance.

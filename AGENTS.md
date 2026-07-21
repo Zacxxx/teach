@@ -1,8 +1,8 @@
-# Teach GPT development guidance
+# Teach development guidance
 
 ## Product invariant
 
-Teach GPT records only after explicit, visible consent. Recording must be scoped,
+Teach records only after explicit, visible consent. Recording must be scoped,
 pausable, stoppable, locally inspectable, and tied to an authorization receipt.
 Never turn it into continuous or covert monitoring.
 

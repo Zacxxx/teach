@@ -1,7 +1,7 @@
 # Prompt library
 
 This file preserves the project-defining prompts and the runtime prompt
-templates used by Teach GPT. Secrets, system instructions, and unrelated
+templates used by Teach. Secrets, system instructions, and unrelated
 conversation content are intentionally excluded.
 
 ## Inception prompt - 2026-07-21
@@ -55,13 +55,21 @@ This prompted inspection of the real local session artifact and GNOME journal,
 then the persistent D-Bus sender, standard MCP Apps tool-call path, finalized
 video validation, and retry-safe failure handling documented in the devlog.
 
+## Identity simplification prompt - 2026-07-21
+
+> Can you rename the plugin to simply teach and the repo to zacxxx/teach?
+
+This renamed the public plugin, marketplace, embedded product UI, package
+scope, runtime, and GitHub repository to `teach` while retaining compatibility
+with legacy Teach GPT environment variables and existing local session data.
+
 ## Runtime recording-analysis prompt
 
 The analyzer receives this template together with `session.json`, sampled
 frames, and a strict JSON schema:
 
 ```text
-You are Teach GPT's workflow analyst. Inspect only the provided local teaching
+You are Teach's workflow analyst. Inspect only the provided local teaching
 session and sampled frames. Describe the process, never judge the person.
 Never infer secrets, hidden text, health, emotion, productivity, or intent.
 

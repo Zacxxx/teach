@@ -17,7 +17,7 @@ flowchart LR
 
 ## Components
 
-### `plugins/teach-gpt`
+### `plugins/teach`
 
 Installable Codex bundle containing the `$teach` orchestration skill, MCP Apps
 component, MCP configuration, self-extracting Linux x86_64 runtime, manifest,
@@ -44,10 +44,12 @@ package. It is not required by the installed plugin or a hosted multi-user servi
 
 ## File workspace
 
-`TEACH_GPT_HOME` defaults to `$XDG_DATA_HOME/teach-gpt` or
-`~/.local/share/teach-gpt`. Directories use mode `0700`; sensitive artifacts use
+`TEACH_HOME` defaults to `$XDG_DATA_HOME/teach` or
+`~/.local/share/teach`. Directories use mode `0700`; sensitive artifacts use
 `0600`. JSON is written to a same-directory temporary file, synced, and renamed.
 The event log stores lifecycle metadata only and never raw screen or text data.
+Existing `TEACH_GPT_HOME` configuration and `~/.local/share/teach-gpt` data are
+used as compatibility fallbacks when no new Teach workspace is configured.
 
 ## State machine
 
@@ -98,7 +100,7 @@ output remains a review draft until explicit publication.
 
 The compiler renders human-readable `SKILL.md` plus analysis provenance. Drafts
 remain inside the session. Publication copies a validated, collision-safe skill
-directory to `TEACH_GPT_SKILLS_HOME` or `~/.agents/skills`, records its version,
+directory to `TEACH_SKILLS_HOME` or `~/.agents/skills`, records its version,
 and returns the direct `$skill-name` invocation. A new Codex task is recommended
 so the initial skill index is refreshed.
 

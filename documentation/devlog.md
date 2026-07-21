@@ -1,8 +1,8 @@
-# Teach GPT devlog
+# Teach devlog
 
 ## 2026-07-21 - Inception and scope
 
-Teach GPT began as a proposal to turn Corridor's visible, authorization-bound
+Teach began as a proposal to turn Corridor's visible, authorization-bound
 process observation into a user-directed Codex teaching mode. The desired flow
 was: optional naming, explicit readiness, native action and screen recording,
 natural-language stopping, AI analysis, rich labelisation, review, equivalent
@@ -10,7 +10,7 @@ optimization, and publishing as a reusable skill.
 
 The first repository audit established that Corridor provided valuable policy,
 classification, review, audit, and sandbox ideas but intentionally had no
-native capture and kept its demo state in memory. Teach GPT therefore uses a
+native capture and kept its demo state in memory. Teach therefore uses a
 clean repository history and reuses the governance design rather than claiming
 that the recorder already existed.
 
@@ -84,6 +84,15 @@ removes undefined values from JSON-RPC arguments, and renders tool failures in
 the panel. A protocol test executes begin, start, stop, and analyze with the
 same argument shapes as the buttons.
 
+## 2026-07-21 - Identity simplified to Teach
+
+The public identity was shortened from Teach GPT to Teach. The plugin ID,
+marketplace, MCP resource, package scope, bundled runtime, visible interface,
+documentation, and repository URL now consistently use `teach`. New installs
+store sessions under `~/.local/share/teach`; the core still recognizes the
+legacy environment variables and existing `~/.local/share/teach-gpt` workspace
+so the rename does not strand recordings or taught processes.
+
 ## Decision log
 
 | Decision | Why |
@@ -99,3 +108,4 @@ same argument shapes as the buttons.
 | Bundled compressed runtime | Make plugin installation sufficient for judges and users on supported Linux. |
 | Persistent GNOME D-Bus sender | GNOME binds capture lifetime to the caller; the sender must survive until explicit stop. |
 | Standard MCP Apps `tools/call` | Keep the component portable across Codex and ChatGPT hosts. |
+| Single `teach` identity | Keep invocation, repository, packages, UI, and marketplace naming predictable. |

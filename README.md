@@ -1,6 +1,6 @@
-# Teach GPT
+# Teach
 
-Teach GPT is an open-source, Linux-first Codex plugin that learns a reusable
+Teach is an open-source, Linux-first Codex plugin that learns a reusable
 skill from a workflow you demonstrate. You describe the goal or skip naming,
 approve a visible recording in Codex, perform the task, stop naturally or from
 the embedded control surface, review a structured process draft, and publish it as a normal
@@ -12,7 +12,7 @@ This project was created for **OpenAI Build Week 2026** with Codex and GPT-5.6.
 
 OpenAI's Record & Replay validates the idea of turning demonstrations into
 skills, but its initial release is macOS-only, requires Computer Use, and is not
-initially available in the EEA, United Kingdom, or Switzerland. Teach GPT is a
+initially available in the EEA, United Kingdom, or Switzerland. Teach is a
 separate implementation with a different product boundary:
 
 - **Open source:** Apache-2.0 code, inspectable storage, and portable skill output.
@@ -25,18 +25,18 @@ separate implementation with a different product boundary:
 - **Optimization with proof:** alternatives are separated from verified
   output-equivalent methods.
 
-Teach GPT is not affiliated with or a replacement for OpenAI Record & Replay.
+Teach is not affiliated with or a replacement for OpenAI Record & Replay.
 
 ## Architecture in one minute
 
 The Codex plugin bundles a `$teach` skill, an MCP Apps interface, and a local
 MCP server. The Linux plugin also bundles a self-extracting x86_64 backend, so
 installing the plugin does not require Bun or an npm package install. The server
-uses `@teach-gpt/core`, a self-hostable package that stores each session as a
+uses `@teach/core`, a self-hostable package that stores each session as a
 plain directory:
 
 ```text
-~/.local/share/teach-gpt/sessions/<session-id>/
+~/.local/share/teach/sessions/<session-id>/
   session.json
   events.jsonl
   recording.webm
@@ -55,12 +55,13 @@ the no-credentials judge demo.
 - Linux x86_64; GNOME Wayland is the supported native recording target for v0.2.
 - Codex Desktop or Codex CLI for plugin usage and GPT-5.6 analysis.
 - `ffmpeg` for keyframe extraction.
-- GNOME Shell Screencast D-Bus support and `gdbus` for native recording.
+- GNOME Shell Screencast D-Bus support, `gdbus` for probing, and `gjs` for the
+  persistent native recording sender.
 
 Bun 1.3.3 or newer is required only for source development and the deterministic
 repository demo, not for an installed plugin.
 
-Other Linux desktops can use `TEACH_GPT_RECORDER=demo` today or add a recorder
+Other Linux desktops can use `TEACH_RECORDER=demo` today or add a recorder
 adapter without changing the session format.
 
 ## Run without rebuilding
@@ -69,8 +70,8 @@ The repository includes a deterministic judge path with synthetic video and no
 API key:
 
 ```bash
-git clone https://github.com/Zacxxx/teach-gpt.git
-cd teach-gpt
+git clone https://github.com/Zacxxx/teach.git
+cd teach
 bun install --frozen-lockfile
 make demo
 ```
@@ -96,10 +97,10 @@ Add this repository marketplace, install the plugin, and start a new task:
 
 ```bash
 codex plugin marketplace add "$PWD"
-codex plugin add teach-gpt@teach-gpt
+codex plugin add teach@teach
 ```
 
-Then invoke `@teach-gpt`, `$teach`, or say "teach this workflow." Start a new
+Then invoke `@teach`, `$teach`, or say "teach this workflow." Start a new
 Codex task after installation so the plugin index is refreshed. The embedded
 panel drives the flow:
 
