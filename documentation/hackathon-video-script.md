@@ -38,8 +38,8 @@ the real processing animation, then use an honest time-compression card such as
 
 | Time | Picture and action | Voiceover |
 | --- | --- | --- |
-| 0:00-0:08 | Title: **Teach — show Codex once, keep the skill**. Cut to the empty `weekly-handoff.md` beside the source notes. | “Some workflows are much easier to demonstrate than to describe. Teach turns one visible demonstration into a reusable Codex skill.” |
-| 0:08-0:20 | Show the Codex composer. Invoke `@teach` with “Teach Codex a workflow by recording me.” The embedded Teach panel appears. | “It is an open-source Codex plugin built for OpenAI Build Week with Codex and GPT-5.6.” |
+| 0:00-0:10 | Title: **Teach — show Codex once, keep the skill**. Cut to the empty `weekly-handoff.md` beside the source notes. | “Some workflows are much easier to demonstrate than to describe. Teach turns one visible demonstration into a reusable Codex skill.” |
+| 0:10-0:20 | Show the Codex composer. Invoke `@teach` with “Teach Codex a workflow by recording me.” The embedded Teach panel appears. | “It is an open-source Codex plugin built for OpenAI Build Week with Codex and GPT-5.6.” |
 | 0:20-0:33 | Leave name and description blank. Click **Skip**, then show the explicit ready screen. | “Naming is optional. Teach can infer it later, but recording never starts from the first request.” |
 | 0:33-0:43 | Click **I’m ready — start recording**. Hold long enough to show the red recording state and timer. | “A separate ready action creates a short-lived consent record and starts this computer’s native recorder.” |
 | 0:43-1:05 | Perform the prepared Markdown handoff workflow naturally. Keep both source and output legible. Click **End recording**. | “I perform the task normally. Teach captures the screen and pointer locally—no raw keystroke log, no hidden background monitoring.” |
@@ -48,8 +48,8 @@ the real processing animation, then use an honest time-compression card such as
 | 1:42-1:57 | Edit one field—change the name to **Prepare the verified weekly handoff**—then click **Save edits**. | “The model only drafts. I can review and edit what it learned before anything is published.” |
 | 1:57-2:12 | Click **Suggest alternatives** and show the alternative plus its verification status. | “Optimization is optional, and it is strict: an alternative must target the exact same output, not a cheaper or lower-quality substitute.” |
 | 2:12-2:27 | Click **Publish skill**. Show the generated `$prepare-the-verified-weekly-handoff` invocation. Open a new Codex task and invoke it. | “Once approved, Teach publishes a normal portable skill. I can call it directly from a new Codex task.” |
-| 2:27-2:44 | Split-screen: repository README, Apache-2.0 license, file-based session tree, and GitHub Actions for Linux, macOS, and Windows. | “Teach is Apache-2.0, stores inspectable files instead of a hidden database, and packages native paths for Linux, macOS, and Windows 11.” |
-| 2:44-2:55 | End card: Teach logo, `github.com/Zacxxx/teach`, **Open source · cross-platform · reviewable**. | “OpenAI Record and Replay validates the interaction. Teach makes the idea open, cross-platform, richly labeled, and user-reviewable. Show Codex once. Keep the skill.” |
+| 2:27-2:41 | Split-screen: repository README, Apache-2.0 license, file-based session tree, and GitHub Actions for Linux, macOS, and Windows. | “Teach is Apache-2.0, stores inspectable files instead of a hidden database, and packages native paths for Linux, macOS, and Windows 11.” |
+| 2:41-2:55 | End card: Teach logo, `github.com/Zacxxx/teach`, **Open source · cross-platform · reviewable**. | “OpenAI Record and Replay validates the interaction. Teach makes the idea open, cross-platform, richly labeled, and user-reviewable. Show Codex once. Keep the skill.” |
 
 ## On-screen overlays
 
@@ -106,4 +106,3 @@ Record these after the master take in case the edit needs coverage:
   owner name.
 - Music, if any, sits at least 18 dB below the voiceover.
 - The YouTube link works in a signed-out browser before it is added to Devpost.
-

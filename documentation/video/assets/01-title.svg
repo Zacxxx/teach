@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <radialGradient id="glow" cx="72%" cy="24%" r="70%">
+      <stop offset="0" stop-color="#6d5ef8" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#101011" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="#101011"/>
+  <rect width="1920" height="1080" fill="url(#glow)"/>
+  <g transform="translate(140 150)">
+    <rect width="128" height="128" rx="32" fill="#6d5ef8"/>
+    <path d="M34 40h60M64 40v56M42 68h44" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="92" cy="92" r="16" fill="#ff6b5f" stroke="#fff" stroke-width="6"/>
+  </g>
+  <text x="140" y="405" fill="#ffffff" font-family="DejaVu Sans, sans-serif" font-size="118" font-weight="700">Teach</text>
+  <text x="140" y="505" fill="#e7e2dc" font-family="DejaVu Sans, sans-serif" font-size="54">Show Codex once. Keep the skill.</text>
+  <line x1="140" y1="580" x2="520" y2="580" stroke="#ff6b5f" stroke-width="8" stroke-linecap="round"/>
+  <text x="140" y="675" fill="#a9a4ad" font-family="DejaVu Sans, sans-serif" font-size="31" letter-spacing="4">OPEN SOURCE · CROSS-PLATFORM · REVIEWABLE</text>
+  <text x="140" y="885" fill="#807b86" font-family="DejaVu Sans, sans-serif" font-size="28">OpenAI Build Week 2026</text>
+</svg>

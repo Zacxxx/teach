@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <defs>
+    <linearGradient id="line" x1="0" x2="1"><stop stop-color="#6d5ef8"/><stop offset="1" stop-color="#ff6b5f"/></linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="#101011"/>
+  <circle cx="1640" cy="160" r="360" fill="#6d5ef8" opacity=".12"/>
+  <g transform="translate(796 160)">
+    <rect width="128" height="128" rx="32" fill="#6d5ef8"/>
+    <path d="M34 40h60M64 40v56M42 68h44" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="92" cy="92" r="16" fill="#ff6b5f" stroke="#fff" stroke-width="6"/>
+  </g>
+  <text x="960" y="420" text-anchor="middle" fill="#fff" font-family="DejaVu Sans, sans-serif" font-size="88" font-weight="700">Show Codex once.</text>
+  <text x="960" y="520" text-anchor="middle" fill="#fff" font-family="DejaVu Sans, sans-serif" font-size="88" font-weight="700">Keep the skill.</text>
+  <rect x="610" y="600" width="700" height="4" rx="2" fill="url(#line)"/>
+  <text x="960" y="710" text-anchor="middle" fill="#c9c4ce" font-family="DejaVu Sans, sans-serif" font-size="38">github.com/Zacxxx/teach</text>
+  <text x="960" y="800" text-anchor="middle" fill="#8e8994" font-family="DejaVu Sans, sans-serif" font-size="26" letter-spacing="3">APACHE-2.0 · LINUX · macOS · WINDOWS 11</text>
+</svg>

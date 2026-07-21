@@ -19,6 +19,7 @@
     "lint": "bun run --filter '*' lint",
     "mcp": "bun run --cwd packages/mcp start",
     "test": "bun run --filter '*' test",
-    "typecheck": "bun run --filter '*' typecheck"
+    "typecheck": "bun run --filter '*' typecheck",
+    "video": "bun run scripts/build-demo-video.ts"
   }
 }

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <rect width="1920" height="1080" fill="#101011"/>
+  <text x="80" y="86" fill="#9c96a5" font-family="DejaVu Sans, sans-serif" font-size="26" letter-spacing="3">SYNTHETIC DEMO WORKSPACE</text>
+  <text x="80" y="148" fill="#fff" font-family="DejaVu Sans, sans-serif" font-size="48" font-weight="700">Preparing the weekly handoff</text>
+  <g transform="translate(80 205)">
+    <rect width="820" height="750" rx="28" fill="#19191c" stroke="#353239" stroke-width="2"/>
+    <circle cx="43" cy="45" r="7" fill="#ff6b5f"/><circle cx="68" cy="45" r="7" fill="#f7c75b"/><circle cx="93" cy="45" r="7" fill="#55c88c"/>
+    <text x="44" y="105" fill="#a9a4ad" font-family="DejaVu Sans Mono, monospace" font-size="23">source-notes.md</text>
+    <text x="44" y="170" fill="#fff" font-family="DejaVu Sans, sans-serif" font-size="30" font-weight="700">Project updates</text>
+    <text x="44" y="226" fill="#ddd9e1" font-family="DejaVu Sans, sans-serif" font-size="25">✓ Linux recorder verified — Maya</text>
+    <text x="44" y="274" fill="#ddd9e1" font-family="DejaVu Sans, sans-serif" font-size="25">✓ Review UX shipped — Theo</text>
+    <text x="44" y="322" fill="#ddd9e1" font-family="DejaVu Sans, sans-serif" font-size="25">✓ Windows CI green — Sam</text>
+    <text x="44" y="402" fill="#fff" font-family="DejaVu Sans, sans-serif" font-size="30" font-weight="700">Risk</text>
+    <text x="44" y="458" fill="#f0b1aa" font-family="DejaVu Sans, sans-serif" font-size="24">macOS permission walkthrough needs final capture</text>
+    <text x="44" y="510" fill="#a9a4ad" font-family="DejaVu Sans, sans-serif" font-size="23">Owner: Maya</text>
+    <text x="44" y="590" fill="#fff" font-family="DejaVu Sans, sans-serif" font-size="30" font-weight="700">Next</text>
+    <text x="44" y="646" fill="#ddd9e1" font-family="DejaVu Sans, sans-serif" font-size="24">Record demo · Verify captions · Submit</text>
+  </g>
+  <g transform="translate(960 205)">
+    <rect width="880" height="750" rx="28" fill="#f6f3ee"/>
+    <rect width="880" height="72" rx="28" fill="#ece8e2"/><rect y="48" width="880" height="24" fill="#ece8e2"/>
+    <text x="40" y="46" fill="#69636d" font-family="DejaVu Sans Mono, monospace" font-size="22">weekly-handoff.md</text>
+    <text x="48" y="145" fill="#17171a" font-family="DejaVu Sans, sans-serif" font-size="42" font-weight="700">Weekly handoff</text>
+    <text x="48" y="220" fill="#6d5ef8" font-family="DejaVu Sans, sans-serif" font-size="26" font-weight="700">COMPLETED</text>
+    <text x="48" y="266" fill="#29272c" font-family="DejaVu Sans, sans-serif" font-size="23">Recorder verified · Review UX shipped · CI green</text>
+    <text x="48" y="342" fill="#6d5ef8" font-family="DejaVu Sans, sans-serif" font-size="26" font-weight="700">RISKS</text>
+    <text x="48" y="388" fill="#29272c" font-family="DejaVu Sans, sans-serif" font-size="23">Complete macOS permission capture</text>
+    <text x="48" y="464" fill="#6d5ef8" font-family="DejaVu Sans, sans-serif" font-size="26" font-weight="700">OWNERS</text>
+    <text x="48" y="510" fill="#29272c" font-family="DejaVu Sans, sans-serif" font-size="23">Maya · Theo · Sam</text>
+    <text x="48" y="586" fill="#6d5ef8" font-family="DejaVu Sans, sans-serif" font-size="26" font-weight="700">NEXT</text>
+    <text x="48" y="632" fill="#29272c" font-family="DejaVu Sans, sans-serif" font-size="23">Record demo · Verify captions · Submit</text>
+    <rect x="48" y="676" width="156" height="42" rx="21" fill="#dff5e9"/>
+    <text x="75" y="705" fill="#23744a" font-family="DejaVu Sans, sans-serif" font-size="20" font-weight="700">SAVED</text>
+  </g>
+</svg>

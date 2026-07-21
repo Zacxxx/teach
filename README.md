@@ -8,6 +8,9 @@ Codex skill.
 
 This project was created for **OpenAI Build Week 2026** with Codex and GPT-5.6.
 
+[Watch the 2:55 Build Week demo](documentation/video/teach-build-week-demo.mp4),
+or inspect its [editable timeline, narration, and render recipe](documentation/video/README.md).
+
 ## Why it exists
 
 OpenAI's Record & Replay validates the idea of turning demonstrations into
@@ -168,6 +171,7 @@ publishing paths. Model output cannot silently publish or execute a workflow.
 - [Automated evals](documentation/evals.md)
 - [Build Week submission checklist](documentation/build-week-submission.md)
 - [Hackathon demo video script](documentation/hackathon-video-script.md)
+- [Rendered demo, narration, captions, and montage sources](documentation/video/README.md)
 - [Public Plugins Directory submission dossier](documentation/plugin-directory-submission.md)
 
 ## License
