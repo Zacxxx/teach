@@ -5,6 +5,8 @@ import { join } from "node:path";
 import test from "node:test";
 import {
   analyzeSession,
+  codexExecArgs,
+  codexFailureMessage,
   compileDraftSkill,
   createSession,
   discoverSessionBusAddress,
@@ -19,6 +21,26 @@ import {
   teachHome,
   windowsRecorderSpec,
 } from "../src/index.ts";
+
+test("Codex analysis inherits the supported model and reports the decisive JSON error", () => {
+  const inherited = codexExecArgs("session", "schema.json", "output.json", "Analyze this");
+  assert.equal(inherited.includes("--model"), false);
+
+  const overridden = codexExecArgs("session", "schema.json", "output.json", "Analyze this", "gpt-test");
+  assert.deepEqual(overridden.slice(overridden.indexOf("--model"), overridden.indexOf("--model") + 2), ["--model", "gpt-test"]);
+
+  const stdout = [
+    JSON.stringify({ type: "thread.started", thread_id: "test" }),
+    JSON.stringify({
+      type: "turn.failed",
+      error: { message: JSON.stringify({ error: { message: "The selected model is not supported for this account." } }) },
+    }),
+  ].join("\n");
+  assert.equal(
+    codexFailureMessage(stdout, "WARNING: stale temp directory\nReading additional input from stdin..."),
+    "The selected model is not supported for this account.",
+  );
+});
 
 test("graphical session bus is discovered without inherited desktop variables", () => {
   assert.equal(

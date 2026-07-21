@@ -110,6 +110,24 @@ a recording. GitHub Actions runs the packaged deterministic lifecycle on all
 three operating systems, while a separate physical-host checklist covers the
 permission prompts and pixels that headless CI cannot honestly validate.
 
+## 2026-07-21 - First real analysis recovery
+
+A native 36-second GNOME recording completed correctly and produced 12 bounded
+frames, but analysis surfaced only `failed to clean up stale arg0 temp dirs`
+and `Reading additional input from stdin`. Those lines were incidental Codex
+startup diagnostics: Teach selected the unavailable generic `gpt-5.6` slug
+instead of the user's supported configured variant, then preferred stderr and
+truncated away the decisive JSON error. A second retry revealed that
+`schema_version` also needed an explicit integer type for current Structured
+Outputs validation.
+
+Teach now omits `--model` by default so `codex exec` inherits the account's
+supported Codex configuration, while `TEACH_MODEL` remains an intentional
+override. The process schema is strict-validator compatible, stdin is closed,
+and JSON-mode failure events take precedence over unrelated warnings. The
+retained real session was recovered in place and advanced to review with six
+learned steps; no recording or frames were discarded.
+
 ## Decision log
 
 | Decision | Why |
@@ -118,7 +136,7 @@ permission prompts and pixels that headless CI cannot honestly validate.
 | Apache-2.0 | Clear open-source permissions and patent grant. |
 | OS-specific capture adapters | Keep one governed lifecycle while using GNOME D-Bus, Apple screen capture, and Windows GDI capture. |
 | No raw keystroke log | Protect secrets while video and semantic frames teach the workflow. |
-| Codex exec analyzer | Uses the installed Codex surface and GPT-5.6 without requiring API credits. |
+| Codex exec analyzer | Uses the installed Codex surface and its supported configured model without requiring separate API credits. |
 | Fixture demo | Lets judges test the full lifecycle without recording or rebuilding. |
 | Capability-based replay label | Prevent a model from claiming it can redo unavailable actions. |
 | Embedded MCP Apps component | Make the full lifecycle usable inside Codex with native controls. |
@@ -126,3 +144,4 @@ permission prompts and pixels that headless CI cannot honestly validate.
 | Persistent GNOME D-Bus sender | GNOME binds capture lifetime to the caller; the sender must survive until explicit stop. |
 | Standard MCP Apps `tools/call` | Keep the component portable across Codex and ChatGPT hosts. |
 | Single `teach` identity | Keep invocation, repository, packages, UI, and marketplace naming predictable. |
+| Inherit Codex model by default | Avoid hard-coding a model slug that may not be enabled for the user's current authentication surface. |

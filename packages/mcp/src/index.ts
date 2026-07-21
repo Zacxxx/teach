@@ -116,7 +116,7 @@ server.registerTool("teach_stop", {
 
 server.registerTool("teach_analyze", {
   title: "Analyze demonstrated workflow",
-  description: "Analyze local recording frames with GPT-5.6 or the configured fixture provider, validate capability claims, and prepare review labels.",
+  description: "Analyze local recording frames with the user's configured Codex model or the deterministic fixture provider, validate capability claims, and prepare review labels.",
   inputSchema: { session_id: z.string().uuid() },
   annotations: mutating,
   _meta: widgetMeta("Analyzing the workflow…", "Workflow ready to review"),

@@ -47,7 +47,8 @@ plain directory:
 ```
 
 Writes are atomic, events are append-only metadata, and raw recordings never
-enter logs. The default analyzer runs sandboxed `codex exec` with GPT-5.6 over
+enter logs. The default analyzer runs sandboxed `codex exec` with the user's
+configured supported Codex model over
 local frames and a strict JSON schema. A deterministic fixture analyzer powers
 the no-credentials judge demo.
 
@@ -55,7 +56,7 @@ the no-credentials judge demo.
 
 - Linux with GNOME Wayland, macOS, or Windows 11 x64. See the exact
   [platform matrix](documentation/platform-support.md).
-- Codex Desktop or Codex CLI for plugin usage and GPT-5.6 analysis.
+- Codex Desktop or Codex CLI for plugin usage and structured workflow analysis.
 - `ffmpeg` and `ffprobe` on `PATH` for recording validation and keyframe extraction.
 - Linux additionally needs GNOME Shell Screencast D-Bus support, `gdbus`, and `gjs`.
 - macOS asks for Screen & System Audio Recording permission on first capture.
@@ -136,8 +137,10 @@ The prompt and decision history is preserved in
 [`documentation/prompt-library.md`](documentation/prompt-library.md) and
 [`documentation/devlog.md`](documentation/devlog.md).
 
-At runtime, GPT-5.6 analyzes locally extracted recording frames through
-`codex exec` and returns a schema-constrained process model. Deterministic code
+At runtime, the user's configured Codex model analyzes locally extracted
+recording frames through `codex exec` and returns a schema-constrained process
+model. `TEACH_MODEL` remains available as an explicit override; when omitted,
+Teach inherits Codex's supported account and configuration default. Deterministic code
 then validates state transitions, replayability evidence, skill structure, and
 publishing paths. Model output cannot silently publish or execute a workflow.
 

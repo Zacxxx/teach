@@ -21,7 +21,7 @@ colors. There is always one primary action and a visible path to stop.
 
 ### Optional metadata, never a blocked start
 
-Name and description are helpful but optional. If omitted, GPT-5.6 proposes
+Name and description are helpful but optional. If omitted, Codex proposes
 them after the demonstration. The user can revise them during review.
 
 ### Review the process, not the raw surveillance feed

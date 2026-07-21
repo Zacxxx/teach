@@ -11,7 +11,7 @@ flowchart LR
     M --> K
     K --> R["Platform recorder adapters"]
     K --> F["File workspace"]
-    K --> X["codex exec / GPT-5.6"]
+    K --> X["codex exec / configured Codex model"]
     K --> S["Generated Codex skill"]
 ```
 
@@ -102,7 +102,9 @@ Windows. Every adapter requires `ffprobe` validation before frame extraction.
 ## Analysis and deterministic validation
 
 The default analyzer launches `codex exec` in the session directory with a
-read-only sandbox, GPT-5.6, a strict output schema, and an explicit output file.
+read-only sandbox, the user's configured supported Codex model, a strict output
+schema, and an explicit output file. `TEACH_MODEL` can override model selection
+for environments where that exact model is available.
 Only the validated final JSON becomes `analysis.json`. Provider event streams
 are not copied into the audit log.
 

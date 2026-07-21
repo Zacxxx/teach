@@ -1,7 +1,7 @@
 {
   "name": "teach",
-  "version": "0.3.0+codex.20260721125205",
-  "description": "Record a desktop workflow through native embedded controls on Linux, macOS, or Windows, analyze it with GPT-5.6, and publish a reusable Codex skill.",
+  "version": "0.3.0+codex.20260721134036",
+  "description": "Record a desktop workflow through native embedded controls on Linux, macOS, or Windows, analyze it with the user's configured Codex model, and publish a reusable skill.",
   "author": {
     "name": "Zacxxx Pinson-Tilche",
     "url": "https://github.com/Zacxxx"

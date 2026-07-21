@@ -4,7 +4,7 @@ export const processAnalysisSchema = {
   type: "object",
   additionalProperties: false,
   properties: {
-    schema_version: { const: 1 },
+    schema_version: { type: "integer", const: 1 },
     name: { type: "string", minLength: 1, maxLength: 80 },
     description: { type: "string", minLength: 1, maxLength: 400 },
     goal: { type: "string", minLength: 1, maxLength: 400 },

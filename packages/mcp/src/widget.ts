@@ -211,7 +211,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
     function setupView() {
       return '<div class="stack">' +
         '<div><h1>What do you want to teach</h1></div>' +
-        '<p>Name and description are optional. You can skip them and let GPT-5.6 propose both after the recording.</p>' +
+        '<p>Name and description are optional. You can skip them and let Codex propose both after the recording.</p>' +
         recorderProblem() +
         '<label>Name <input id="name" maxlength="80" placeholder="e.g. Prepare the weekly handoff" /></label>' +
         '<label>Description <textarea id="description" maxlength="500" placeholder="What output should remain the same?"></textarea></label>' +
@@ -240,7 +240,7 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
 
     function processingView() {
       return '<div class="stack"><p class="eyebrow">Processing</p><h1>Turning the demonstration into a process…</h1>' +
-        '<p>Teach is extracting bounded frames and asking GPT-5.6 for structured labels.</p></div>';
+        '<p>Teach is extracting bounded frames and asking your configured Codex model for structured labels.</p></div>';
     }
 
     function reviewView(analysis) {
