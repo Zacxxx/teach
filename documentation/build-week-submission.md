@@ -27,7 +27,8 @@ Live Devpost data was checked on 2026-07-21. Submissions close at
 - [x] Devpost draft: `https://devpost.com/software/teach-gpt` (project 1357201).
 - [ ] Under-three-minute public or unlisted YouTube demo.
 - [ ] Voiceover explicitly covers the product, Codex, and GPT-5.6.
-- [ ] `/feedback` Codex session ID from the main implementation task.
+- [x] `/feedback` Codex session ID from the main implementation task:
+  `019f826b-60ea-7632-a9c6-30ab3724d963`.
 - [ ] Devpost description in a human voice.
 - [ ] Plugin install steps, supported platforms, and deterministic test path.
 - [ ] Team members added and invitations accepted, if any.
