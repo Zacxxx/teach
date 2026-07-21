@@ -11,9 +11,12 @@ and make consent unmistakable.
 ## Start
 
 1. Ask whether the user wants to provide a name and description. Make skipping explicit.
+   If they skip both, proceed directly to `teach_begin` without a second metadata prompt.
 2. Call `teach_begin` with any supplied metadata.
-3. Summarize what will be recorded, state that raw keystrokes are not logged,
-   and ask whether the user is ready.
+3. State the capture scope before asking whether the user is ready: the selected
+   screen and cursor are recorded to the local session; microphone, clipboard,
+   and raw keystroke logging are off. Mention any platform-specific deviation
+   reported by the tool instead of assuming it silently.
 4. Only after an explicit yes, call `teach_start`.
 
 Never infer readiness from the initial request. The separate ready response is
@@ -38,10 +41,12 @@ Present a compact review containing:
 - replayability status and concrete blockers;
 - verification criteria.
 
-Ask whether to edit, optimize, publish, or discard. Apply edits with
-`teach_review`. Call `teach_optimize` only when the user requests alternatives.
+Ask whether to edit, optimize, publish, or leave the draft unpublished. Apply
+edits with `teach_review`. Call `teach_optimize` only when the user requests alternatives.
 Never describe an alternative as equivalent unless its verification status is
-`verified` against the same output contract.
+`verified` against the same output contract. When presenting an alternative,
+include its verification status, the exact output-contract check, and the
+observed evidence (or say explicitly that it has not run).
 
 ## Publish
 
