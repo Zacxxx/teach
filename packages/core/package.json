@@ -1,0 +1,25 @@
+{
+  "name": "@teach-gpt/core",
+  "version": "0.1.0",
+  "description": "File-backed recording-to-skill foundation for Teach GPT",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": "./src/index.ts",
+  "bin": {
+    "teach-gpt": "./src/cli.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "demo": "bun run src/cli.ts demo",
+    "lint": "eslint src tests",
+    "test": "bun test tests/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@types/node": "24.13.3",
+    "eslint": "9.39.5",
+    "typescript-eslint": "8.64.0",
+    "typescript": "5.9.3"
+  }
+}
