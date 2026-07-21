@@ -39,6 +39,7 @@ test("MCP server exposes the complete teaching lifecycle", async () => {
     assert.ok(resources.resources.some((resource) => resource.uri === "ui://teach-gpt/workflow-v2.html"));
     const widget = await client.readResource({ uri: "ui://teach-gpt/workflow-v2.html" });
     const widgetText = JSON.stringify(widget);
+    const widgetHtml = (widget.contents[0] as { text?: string }).text || "";
     assert.match(widgetText, /text\/html;profile=mcp-app/);
     assert.match(widgetText, /What do you want to teach/);
     assert.match(widgetText, />Continue</);
@@ -48,6 +49,8 @@ test("MCP server exposes the complete teaching lifecycle", async () => {
     assert.match(widgetText, /brand-mark/);
     assert.match(widgetText, /host-context-changed/);
     assert.match(widgetText, /color-background-primary/);
+    assert.match(widgetHtml, /request\("tools\/call", \{ name, arguments: cleanArgs \}\)/);
+    assert.doesNotMatch(widgetHtml, /window\.openai\?\.callTool/);
     assert.doesNotMatch(widgetText, /Visible capture · local artifacts/);
     assert.doesNotMatch(widgetText, /New teaching/);
     assert.doesNotMatch(widgetText, /What will you show Codex/);
@@ -59,6 +62,16 @@ test("MCP server exposes the complete teaching lifecycle", async () => {
     const created = await client.callTool({ name: "teach_begin", arguments: {} });
     assert.equal(created.isError, undefined);
     assert.match(JSON.stringify(created), /explicit Ready button/);
+    const sessionId = (created.structuredContent as { session: { id: string } }).session.id;
+    const started = await client.callTool({ name: "teach_start", arguments: { session_id: sessionId, consent: true } });
+    assert.equal(started.isError, undefined);
+    assert.match(JSON.stringify(started), /"state":"recording"/);
+    const stopped = await client.callTool({ name: "teach_stop", arguments: { session_id: sessionId } });
+    assert.equal(stopped.isError, undefined);
+    assert.match(JSON.stringify(stopped), /"state":"processing"/);
+    const analyzed = await client.callTool({ name: "teach_analyze", arguments: { session_id: sessionId } });
+    assert.equal(analyzed.isError, undefined);
+    assert.match(JSON.stringify(analyzed), /"state":"review"/);
   } finally {
     await client.close();
     await rm(home, { recursive: true, force: true });

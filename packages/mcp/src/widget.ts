@@ -188,8 +188,13 @@ export const TEACH_WIDGET_HTML = `<!doctype html>
 
     async function callTool(name, args) {
       await bridgeReady;
-      if (window.openai?.callTool) return window.openai.callTool(name, args);
-      return request("tools/call", { name, arguments: args });
+      const cleanArgs = Object.fromEntries(Object.entries(args || {}).filter(([, value]) => value !== undefined));
+      const response = await request("tools/call", { name, arguments: cleanArgs });
+      if (response?.isError) {
+        const message = response.content?.find?.((item) => item.type === "text")?.text || "Teach GPT tool call failed.";
+        throw new Error(message);
+      }
+      return response;
     }
 
     function unwrap(response) {
